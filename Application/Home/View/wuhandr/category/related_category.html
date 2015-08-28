@@ -1,0 +1,14 @@
+<div class="list-box">
+    <div class="list-box-head">{$category['parent_title']?$category['parent_title']:$category['title']}</div>
+    <?php
+    // var_dump($category);
+        $childs = D('Category')->getChildren($category['parent']?$category['parent']['id']:$category['id']); 
+    ?>
+    <foreach name="childs" item="one">
+        <a href="/category/{$one['id']}">
+            <div class="list-content {$one['id']==$category['id']?'list-content-selected':''}">
+                {$one['title']}
+            </div>
+        </a>
+    </foreach>
+</div>

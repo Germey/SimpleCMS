@@ -1,0 +1,26 @@
+<div id="content-edit">
+    <include file="content/breadcrumb" />
+    <div class="block">
+        <form action="{:U('author/save')}" method="post" class="form-horizontal post_ajax_form">
+            <table class="table table-noborder">
+                <foreach name="model_fields" item="field">
+                      {:form_block($key, $field, $author[$key])}
+                </foreach>
+            </table>
+            <div class="form-group form-actions">
+                <input type="hidden" name="id" value="{$author['id']}">
+                <div class="col-md-9 col-md-offset-2">
+                    <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+    });
+
+</script>

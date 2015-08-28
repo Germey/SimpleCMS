@@ -1,0 +1,75 @@
+<div id="category-edit">
+    <include file="banner/breadcrumb" />
+
+    <div class="content-header">
+        <div class="header-section">
+            <a href="/Manage/banner/render_edit" class="btn btn-sm btn-primary ajaxlink"><i class="fa fa-plus"></i>新建Banner/Ad</a>
+        </div>
+    </div>
+    <div class="block">
+        <div class="form-group">
+            <div class="col-md-2" style="padding-left:0">
+                <if condition="$banners">
+                    <div class="category-select">
+                        <foreach name="banners" item="one">
+                            <div class="pl0 {$one['id']==$banner['id']?'active':''}" onclick="select_category({$one['id']})">
+                                <i class="fa fa-circle-o"></i>&nbsp;{$one['title']}
+                            </div>
+                        </foreach>
+                    </div>
+                </if>
+            </div>
+            <div class="col-md-10">
+                <if condition="$banner['id']">
+                    <div class="pull-right">
+                        <?php 
+                            $del_link = 'javascript:void(0)';
+                            $ask_text = '删除不了！需要删除完图片后才能删除方案';
+                            if(!$banner['pictures']) {
+                                $del_link = U('Banner/delete?id='.$banner['id']);
+                                $ask_text = '你确认要删除该方案么？';
+                            }
+
+                        ?>
+                        <a href="{$del_link}" class="btn btn-xs btn-danger ajaxlink" ask="{$ask_text}"><i class="hi hi-remove"></i>删除当前方案</a>
+                        <a href="/Manage/banner/render_edit?id={$banner['id']}" class="btn btn-xs btn-primary ajaxlink"><i class="fa fa-pencil"></i>编辑方案名称</a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="alert alert-info">
+                        <div style="margin-bottom:10px">关键字：<span class="text-danger">{$banner['name']}</span></div>
+                        <div>备注：{:nl2br($banner['description'])}</div>
+                    </div>
+                    <form action="{:U('banner/save')}" method="post" class="post_ajax_form">
+                        <?php 
+                            $object_id = $banner['id'];
+                            $object_type = 'banner';
+                            $pictures = $banner['pictures'];
+                        ?>
+                        <include file="public/pictures_edit" />
+
+                        <div class="form-group form-actions">
+                            <input type="hidden" name="id" value="{$banner['id']}">
+                            <input type="hidden" name="banner_name" value="{$banner['name']}">
+                            <div class="col-md-9 col-md-offset-1">
+                                <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                            </div>
+                        </div>
+                    </form> 
+                </if>
+            </div>
+            <br />
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+    });
+
+    function select_category(cid) {
+         var href = "{:U('Banner/index')}";
+         window.location.href = href + '?id=' + cid;
+    }
+</script>

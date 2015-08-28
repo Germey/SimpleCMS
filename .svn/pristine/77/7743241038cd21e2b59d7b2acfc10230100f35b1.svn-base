@@ -1,0 +1,24 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+
+<form method="post" action="{:U('banner/submit_edit')}" class="form-horizontal post_ajax_form">
+    <table class="table table-noborder">
+        <tr>
+            <td class="item-label">显示名称</td>
+            <td><input type="text" value="{$banner['title']}" name="title" class="form-control input-sm"></td>
+        </tr>
+        <tr>
+            <td class="item-label">读取关键字(英文)</td>
+            <td>
+                <input type="text" value="{$banner['name']}" name="name" class="form-control input-sm" placeholder="仅限英文和下划线">
+            </td>
+        </tr>
+        <tr>
+            <td class="item-label">描述</td>
+            <td><textarea name="description" class="form-control input-sm" rows="3">{$banner['description']}</textarea></td>
+        </tr>
+    </table>
+    <input type="hidden" name="id" value="{$banner['id']}" />
+</form>
+
+<include file="public/confirm_dialog_footer" />

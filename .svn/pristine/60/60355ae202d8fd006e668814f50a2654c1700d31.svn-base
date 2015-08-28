@@ -1,0 +1,40 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+    <div class="block">
+        <form action="{:U('message/save')}" method="post" class="form-horizontal post_ajax_form">
+            <input name="id" type="hidden" value="{$msg['id']}">
+            <table class="table table-noborder">
+                <foreach name="msg_fields" item="field">
+                    <tr>
+                    <td class="item-label">{$field['title']}</td>
+                        <td style="padding: 15px 10px;">
+                            <if condition="$key eq 'admin_note'">
+                                <textarea name="admin_note" class="span4 form-control input-sm" rows="5">{$msg[$key]}</textarea>
+                            <elseif condition="$key eq 'status'" />
+                                <select  class="span2 form-control input-sm" name="status">
+                                    <foreach name="field['options']" key="k" item="opt">
+                                        <option value="{$k}" <if condition="$k eq $msg['status']">selected</if>>{$opt}</option>
+                                    </foreach>
+                                </select>
+                            <else />
+                                {$msg[$key]}
+                            </if>
+                        </td>
+                    </tr>
+                </foreach>
+                <tr>
+                    <td class="item-label">同时发邮件给</td>
+                    <td>
+                         <input type="text" class="span2 form-control input-sm" name="reply_to" value="{$msg['email']}">
+                         <span class="text-muted">删除输入框的邮箱就不发送了</span>
+                    </td>
+                </tr>
+            </table>
+            <div class="form-group form-actions">
+                <div class="col-md-9 col-md-offset-2">
+                    <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

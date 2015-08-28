@@ -1,0 +1,109 @@
+<div id="category-edit">
+    <include file="extend/breadcrumb" />
+
+    <div class="content-header">
+        <div class="header-section">
+            <a href="/Manage/extend/render_edit" class="btn btn-sm btn-primary ajaxlink"><i class="fa fa-plus"></i>新建扩展方案</a>
+        </div>
+    </div>
+    <div class="block">
+        <div class="form-group">
+            <div class="col-md-2" style="padding-left:0">
+                <if condition="$extends">
+                    <div class="category-select">
+                        <foreach name="extends" item="one">
+                            <div class="pl0 {$one['id']==$extend['id']?'active':''}" onclick="select_category({$one['id']})">
+                                <i class="fa fa-circle-o"></i>&nbsp;{$one['title']}
+                            </div>
+                        </foreach>
+                    </div>
+                </if>
+            </div>
+            <div class="col-md-10">
+                <if condition="$extend['id']">
+                    <div class="pull-right ">
+                        <a href="/Manage/extend/render_edit?id={$extend['id']}" class="btn btn-xs btn-primary ajaxlink"><i class="fa fa-pencil"></i>编辑方案名称</a>
+                        <a href="{:U('Extend/delete?id='.$extend['id'])}" class="btn btn-xs btn-danger ajaxlink" ask="你确认要删除该方案么？"><i class="hi hi-remove"></i>删除当前方案</a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="alert alert-info">{:nl2br($extend['description'])}</div><hr />
+                    <form action="{:U('extend/save')}" method="post" class="post_ajax_form">
+                        <table class="table table-noborder table_extend">
+                            <tr><th></th><th>显示名称</th><th>变量名(不要重复，不要特殊字符)</th><th>提示</th><th>类型</th></tr>
+                            <foreach name="extend['extends']" item="one">
+                                <tr>
+                                    <td style="width: 10px;"><span class="trextend" title="单击预览，拖拽排序"><img src="/Public/Manage/css/img/dragsort_flag.png"></span></td>
+                                    <td><input type="text" name="extends_title[]" class="form-control input-sm" value="{$one['title']}"></td>
+                                    <td><input type="text" name="extends_name[]" class="form-control input-sm" value="{$one['name']}"></td>
+                                    <td>
+                                        <input type="text" name="extends_tip[]" class="form-control input-sm" value="{$one['tip']}">
+                                    </td>
+                                    <td>
+                                        <select name="extends_type[]" class="span1 form-control input-sm extend_type">{:select_option($field_types, $one['type'])}</select>
+                                        <input type="text" name="extends_option[]" class="form-control input-sm" value="{$one['options']}" {:($one['type']=='radio'|| $one['type'] == 'checkbox') ?'':'style="display:none"'} />
+
+                                    </td>
+                                </tr>
+                            </foreach>
+                            <tr>
+                               <td style="width: 10px;"><span class="trextend" title="单击预览，拖拽排序"><img src="/Public/Manage/css/img/dragsort_flag.png"></span></td>
+                               <td><input type="text" name="extends_title[]" class="form-control input-sm" value=""></td>
+                               <td><input type="text" name="extends_name[]" class="form-control input-sm" placeholder="限英文和下划线"></td>
+                               <td>
+                                <input type="text" name="extends_tip[]" class="form-control input-sm" value="{$one['tip']}">
+                            </td>
+                            <td>
+                                <select name="extends_type[]" class="span1 form-control input-sm extend_type">
+                                    {:select_option($field_types)}
+                                </select>
+                                <input type="text" name="extends_option[]" class="form-control input-sm" value="{$one['options']}" style="display:none" placeholder="用空格分隔下拉框各个选项"/>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="form-group form-actions">
+                        <input type="hidden" name="id" value="{$extend['id']}">
+                        <div class="col-md-9 col-md-offset-1">
+                            <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                        </div>
+                    </div>
+                </form>
+            </if>
+        </div>
+        <br />
+        <div class="clearfix"></div>
+    </div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.extend_type').change(function(){
+            var res = $(this).children('option:selected').val();
+            if(res == 'radio' || res == 'checkbox') {
+                $(this).next().show();
+            } else {
+                $(this).next().hide();
+            }
+        });
+    });
+
+    function select_category(cid) {
+     var href = "{:U('Extend/index')}";
+     window.location.href = href + '?id=' + cid;
+ }
+
+
+ $(".table_extend").dragsort({
+    itemSelector: "tr",
+    dragSelectorExclude: "input, textarea, select",
+    dragSelector: ".trextend" ,
+    dragBetween: true,
+    dragEnd: table_dragsort,
+    placeHolderTemplate: "<tr></tr>"
+});
+
+
+//注意：没有这个end 方法会报错
+function table_dragsort() {}
+</script>

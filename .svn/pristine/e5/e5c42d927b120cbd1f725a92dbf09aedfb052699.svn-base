@@ -1,0 +1,12 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+
+<form method="post" action="{:U('config/submit_new')}" class="form-horizontal post_ajax_form">
+    <table class="table table-noborder">
+        <foreach name="config_fields" item="field">
+            {:form_block($key, $field, $config[$key])}
+        </foreach>
+    </table>
+</form>
+
+<include file="public/confirm_dialog_footer" />

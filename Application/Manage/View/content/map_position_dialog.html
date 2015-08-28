@@ -1,0 +1,157 @@
+{__NOLAYOUT__}
+<div class="box-mask map-box-mask">
+    <div class="modal-header">
+        <a class="close" onclick="return X.boxClose();">×</a>
+        <h4>{$title}<small>（双击地图或者拖动标注点选择位置）</small></h4>
+    </div>
+    <div class="modal-body">
+        <div class="search_address input-group span5">
+            <input type="text" id="search_location" name="search_location" class="form-control input-sm">
+            <span class="input-group-addon btn-search-location"><a href="javascript:void(0);"><i class="gi gi-search"></i></a></span>
+        </div>
+        <div id="map" style="width:580px; height:350px" ></div>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn btn-success btn-sm" onclick="return X.boxClose();">
+            确认
+        </a>
+        <a href="#" onclick="return X.boxClose();" class="btn btn-sm"> 取消</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var default_point = '116.47073, 39.963204';
+    function set_position(event){
+        $("#position").val(event.point.lng + "," + event.point.lat);
+    }
+
+    function get_setted_position(){
+        var position = $("#position").val();
+        if(position){
+            var lng_lat = position.split(",");
+            return new BMap.Point(lng_lat[0], lng_lat[1]);
+        }else{
+            return null;
+        }
+    }
+
+    function get_location_str(){
+        var state = $("#province").val();
+        var city = $("#city").val();
+        var street = $("#street").val();
+        var address_detail = $(".address-detaill").val();
+        return state + city + street + address_detail;
+    }
+
+    function search_location(weizhi){
+        var map = new BMap.Map("map");   
+        map.addControl(new BMap.NavigationControl());
+        map.enableScrollWheelZoom();
+        map.disableDoubleClickZoom();       
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 13);
+
+        var myGeo = new BMap.Geocoder();
+            // 将地址解析结果显示在地图上,并调整地图视野
+            myGeo.getPoint(weizhi, function(point){
+                if (point) {
+                    map.centerAndZoom(point, 13);
+                    map.addOverlay(new BMap.Marker(point));
+                }
+            });
+
+            map.addEventListener('click', function(event){
+                set_position(event);
+            })
+        }
+
+        function  LBMap() {
+            var map = new BMap.Map('map');
+            map.addControl(new BMap.NavigationControl());
+            map.enableScrollWheelZoom();
+            map.disableDoubleClickZoom();
+
+            map.centerAndZoom(new BMap.Point(default_point), 13);
+
+            var marker = new BMap.Marker(); 
+            marker.setAnimation(BMAP_ANIMATION_DROP);
+            marker.enableDragging();    //可拖拽
+            marker.addEventListener("dragend",set_position );
+            marker.setPosition(new BMap.Point(default_point));
+
+            //创建标注
+            this.setMaker = function() {
+                marker.addEventListener("dragend",set_position );
+                var setted_position = get_setted_position();
+                var location_str = get_location_str();
+
+                $('input[name=search_location]').val(location_str);
+
+                if(setted_position){
+                    map.centerAndZoom(setted_position, 13);
+                    marker.setPosition(setted_position);
+                }else{
+                    // 将地址解析结果显示在地图上,并调整地图视野
+                    var myGeo = new BMap.Geocoder();
+                    myGeo.getPoint(location_str, function(point){
+                        if (point) {
+                            map.centerAndZoom(point, 13);
+                            marker.setPosition(point);
+                            $("#position").val(point.lng + "," + point.lat);
+                        }else{
+                            var city = $("#city").val();
+                            if(city){
+                                var center = map.getCenter();
+                                $("#position").val(center.lng + "," + center.lat);
+                                marker.setPosition(center);
+                            }else{
+                                map.centerAndZoom(new BMap.Point(default_point), 11);
+                                marker.setPosition(new BMap.Point(default_point));
+                                $("#position").val(default_point);
+                            }
+                        }
+                    }, $("#city").val());
+                }
+                map.addOverlay(marker);
+            },
+
+            //地址解析
+            this.search_location = function(location){
+                var myGeo = new BMap.Geocoder();
+                // 将地址解析结果显示在地图上,并调整地图视野
+                myGeo.getPoint(location, function(point){
+                    if (point) {
+                        map.centerAndZoom(point, 13);
+                        $("#position").val(point.lng + "," + point.lat);
+                        marker.setPosition(new BMap.Point(point.lng, point.lat));
+                    }
+                });
+
+            },
+
+            //逆地址解析
+            this.reverse_address_resolved = function(event){
+                var geoc = new BMap.Geocoder();    
+                var pt = event.point;
+                geoc.getLocation(pt, function(rs){
+                    var addComp = rs.addressComponents;
+                    alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+                });     
+            }
+
+            //监听双击事件
+            map.addEventListener("dblclick", function(event){
+                marker.setPosition(event.point);
+                map.centerAndZoom(event.point);
+                set_position(event);
+            });
+        }
+
+        var form = new LBMap();
+        form.setMaker();
+
+        $('.btn-search-location').click(function(event) {
+            var location = $('input[name=search_location]').val();
+            form.search_location(location);
+
+        });
+
+    </script>

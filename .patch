@@ -1,0 +1,38 @@
+Index: Application/Home/Controller/CategoryController.class.php
+===================================================================
+--- Application/Home/Controller/CategoryController.class.php	(revision 188)
++++ Application/Home/Controller/CategoryController.class.php	(working copy)
+@@ -12,6 +12,9 @@
+ 
+         /* 获取分类信息 */
+         $category = D('Category')->info($id);
++        if ($category['type'] == 3 && $category['extralink']) {
++            redirect($category['extralink']);
++        }
+         if($category){
+             $this->assign('category', $category);
+             $data = D('Category')->set_current_nav($category);
+Index: Application/Manage/Controller/PublicController.class.php
+===================================================================
+--- Application/Manage/Controller/PublicController.class.php	(revision 188)
++++ Application/Manage/Controller/PublicController.class.php	(working copy)
+@@ -6,7 +6,6 @@
+ class PublicController extends Controller {
+ 
+     public function login($username = null, $password = null, $captcha = null) {
+-
+         if(IS_POST) {
+             if(!check_captcha($captcha)) {
+                 $this->error('验证码输入错误！');
+@@ -23,9 +22,9 @@
+                 $this->redirect('Index/index');
+             }else{
+                 /* 读取数据库中的配置 */
+-                // $config	=	S('DB_CONFIG_DATA');
++                // $config  =   S('DB_CONFIG_DATA');
+                 // if(!$config){
+-                //     $config	=	D('Config')->lists();
++                //     $config  =   D('Config')->lists();
+                 //     S('DB_CONFIG_DATA',$config);
+                 // }
+                 // C($config); //添加配置

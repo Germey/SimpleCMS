@@ -1,0 +1,33 @@
+<include file="public/category_head" />
+
+<div class="container detail">
+    <div class="listleft">
+        <include file="public/breadcrumb" />
+
+        <table style="width: 100%">
+          <tr>
+            <td style="width: 210px;">
+              <img src="{:thumb($info['thumb'],200,280)}" alt="{$info['title']}"></p>          
+            </td>
+            <td style="padding: 0 20px; vertical-align:top; text-align:left">
+              <h5>{$info['title']}</h5>
+              <p class="muted">{$info['publish_time']}</p>
+              <if condition="$info['summary']">
+                <p style="color:#666;">{$info['summary']}</p>
+              </if>
+
+              <foreach name="info['files']" item="file">
+                <if condition="in_array($file['ext'], array('pdf','jpg','gif','png'))">
+                  <a href="/Uploads/file/{$file['savepath']}{$file['savename']}" target="_blank"><i class="icon-zoom-in"></i>预览</a>&nbsp;&nbsp;
+                </if>
+
+                  <a href="{:U('File/download?id='.$file['md5'])}" >
+                    <i class="icon-download-alt"></i>下载&nbsp;&nbsp;{:format_bytes($file['size'])}</span></a>
+              </foreach>
+
+            </td>
+          </tr>
+        </table>
+
+    </div>
+</div>

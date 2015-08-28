@@ -1,0 +1,12 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+    <div class="col-md-12 block">
+        <div class="alert  alert-warning">
+            <foreach name="import_check_results['notice']" item="notice">
+                <p>{$notice['error']['msg']}</p>
+            </foreach>
+        </div>
+        <a href="/Manage/content/import_content/cid/{$category_id}" class="btn btn-sm btn-success">上一步</a>
+    </div>
+    <div class="clearfix"></div>
+</div>

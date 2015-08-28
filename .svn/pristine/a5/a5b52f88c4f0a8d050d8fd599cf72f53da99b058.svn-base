@@ -1,0 +1,18 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+
+<form method="post" action="{:U('extend/submit_edit')}" class="form-horizontal post_ajax_form">
+    <table class="table table-noborder">
+        <tr>
+            <td class="item-label">方案名称</td>
+            <td><input type="text" value="{$extend['title']}" name="title" class="form-control input-sm"></td>
+        </tr>
+        <tr>
+            <td class="item-label">方案描述</td>
+            <td><textarea name="description" class="form-control input-sm" rows="3">{$extend['description']}</textarea></td>
+        </tr>
+    </table>
+    <input type="hidden" name="id" value="{$extend['id']}" />
+</form>
+
+<include file="public/confirm_dialog_footer" />

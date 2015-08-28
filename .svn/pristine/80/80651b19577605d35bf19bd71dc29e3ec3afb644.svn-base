@@ -1,0 +1,224 @@
+<?php
+namespace Home\Controller;
+use Vendor\Ip\IP;
+
+class ContentController extends HomeController {
+
+    static  $_filter_mapping = array(
+        'like'  => "%%%s%%",
+        'eq'    => '%d',
+        'gt'    => '%d',
+        'egt'   => '%d',
+    );
+
+    public function detail($id = 0, $p = 1){
+
+        if(is_numeric($id)) {
+            $info = D('Content')->getPageById($id);
+        } else {
+            $info = D('Content')->getPageByName($id);
+        }
+
+        if(!$info) {
+            $this->error('不存在该文章');
+
+        }
+
+        $category = D('Category')->getTree($info['category_id']);
+        $data = D('Category')->set_current_nav($category);
+
+        /* 模板赋值并渲染模板 */
+        $this->assign('category', $category);
+        $this->assign('info', $info);
+
+        /* 页码检测 */
+        $p = intval($p);
+        $p = empty($p) ? 1 : $p;
+        $this->assign('page', $p); //页码
+
+        M('Content')->where('id='.$id)->setInc('pv');
+
+        /* 获取模板 */
+        $tmpl = 'article/detail';
+        if ($category['models'][$info['model_id']]) {
+            $tmpl = $category['models'][$info['model_id']];
+        }
+        if ($info['parent_id'] && $category['children_models']) {
+            $tmpl = $category['children_models'][$info['model_id']];
+        }
+
+        $this->root_navbar = $data['root_navbar'];
+        $this->current_navbar = $data['current_navbar'];
+        $this->is_detail_page = 1;
+        $this->display($tmpl);
+    }
+
+
+    function render_get_content(){
+        $content_id =  I('content_id');
+        $this->content = D('Content')->getPageById($content_id);
+        $html = $this->fetch('article:article_dialog');
+        echo $html;
+    }
+
+    function ajax_get_contents(){
+        $_valid_field =  array('category_id', 'title', 'create_time', 'address', 'child_content_count', 'username');
+
+        $filters = self::$_filter_mapping;
+        $data = $_POST;
+        $condition= array();
+
+        if($data['address']) {
+            if(!empty($data['address'][0])){
+                $address = $data['address'][0] . '///';
+            }
+
+            if(!empty($data['address'][1])){
+                $address .= $data['address'][1]. '///';
+            }
+            $data['address'] = $address .  $data['address'][2];
+        }
+
+        foreach ($_valid_field as $val) {
+            if($data[$val] =='' || $data[$val] == 'null' || !$data[$val . '_filter']) continue;
+            if($data[$val . '_filter']) {
+                $condition[$val] = array($data[$val . '_filter'], sprintf($filters[$data[$val . '_filter']], $data[$val]));
+            }else {
+                $condition[$val] = $data[$val];
+            }
+        }
+        if($data['start_time']) {
+            $condition['create_time'][] = array('gt', date('Y-m-d 00:00:00', strtotime($data['start_time'])) );
+        }
+        if($data['end_time']) {
+            $condition['create_time'][] = array('lt', date('Y-m-d 00:00:00', strtotime($data['end_time'])+24*3600));
+        }
+        $condition['latlng'] = array('gt', '');
+
+        if($condition['username']) {
+            $uc['username'] = $condition['username'];
+            $user_ids = D('User')->where($uc)->getField('id', true);
+            if($user_ids) {
+                $user_filter['create_user_id'] = array('in', $user_ids);
+                $user_content_ids = D('Content')->distinct('parent_id')->where($user_filter)->getField('parent_id', true);
+                if($user_content_ids){
+                    $condition['id'] = array('in', $user_content_ids);
+                }
+            }else {
+                $result['result'] = 'none';
+                echo json_encode($result);
+                return;
+            }
+            unset($condition['username']);
+        }
+
+        $this->contents = D('Content')->getPages($condition, 0, 0, 'update_time desc', 'id, latlng, child_content_count', false);
+
+        $result['result'] = $this->contents;
+        echo json_encode($result);
+    }
+
+
+    function ajax_dialog_map_position() {
+        $this->title = "请选择位置";
+        $html = $this->fetch("map:map_position_dialog");
+        json($html, "dialog");
+
+    }
+
+    function get_contents_by_userid($id) {
+        $id = intval($id);
+        $filter['update_user_id|create_user_id'] = $id;
+        // $filter['category_id'] = 200;
+        $this->current_user = D('User')->field('password', true)->where('id = %d', $filter['update_user_id|create_user_id'])->find();
+
+        $filter['status'] = 2;
+        $filter['parent_id'] = array('gt', 0);
+        $filter['model_id'] = 1;
+
+        //累积监测
+        $this->monitor_total = D('Content')->listCount($filter);
+        list($pagesize, $page_num, $pagestring) = pagestring($this->monitor_total);
+        $this->pagestring = $pagestring;
+        $this->contents = D('Content')->getPages($filter,  0, 0, 'update_time desc', true, false, true);
+        //监测点
+        $filter['status'] = array('lt', 10);
+        $filter['category_id'] = array('gt', 0);
+        $filter['parent_id'] = array('gt', 0);
+        $filter['create_user_id'] = $id;
+        $this->monitor_parent_ids = D('Content')->distinct(true)->field('parent_id, category_id')->where($filter)->select();
+        $this->display('article:user_article_lists');
+    }
+
+    public function edit(){
+        session('token', gen_password(time()));
+        $category_id = I('category_id');
+        $this->content_id = I('content_id');
+
+        $condition['category_id'] = $category_id;
+        $condition['id'] = intval($this->content_id);
+        $content =  D('Content')->getPages($condition);
+        $this->content = $content[0];
+
+        $this->category = D('Category')->where('id=%d', $category_id)->find();
+        $this->display('article:edit');
+    }
+
+    public function save(){
+        $data = $_POST;
+        $token = session('token');
+
+        if($token != $data['token'] ) {
+            $this->error('数据异常');
+        }
+
+        if(!$data['parent_id']) {
+            $this->error('举报详细名称不能为空');
+        }
+        if(!$data['title']){
+            $this->error('爆料人不能为空');
+        }
+        $id = D('Content')->updateContent($_POST);
+
+        session('token', null);
+
+        if($id) {
+            $this->success('恭喜您，爆料成功', U('Content/' . $id));
+        }else{
+            $this->error('爆料人失败');
+        }
+    }
+
+
+    /**
+     *   get lat lng
+     *
+     *  @param string $address
+     *  @param string $city
+     *
+     */
+    public  function  hack_set_latlng(){
+       $url = 'http://api.map.baidu.com/geocoder/v2/?output=json&ak=NoAbaCexRX7CTt2SulOYHE49&callback=showLocation';
+        $url .= "&address=上海市人民广场";
+        // $url .= "&city=上海市";
+
+        header("Content-type: text/html; charset=utf-8");
+        $result = file_get_contents($url);
+        $result = json_decode($result,true);
+        var_dump($url, $result);
+        /*$category_ids =  array(3,4,5);
+
+        $contents = D('Content')->getPagesByTypeId($category_ids, 0, 0, null,false,null, 'id,address');
+        foreach ($contents as $key => $val) {
+            $address = str_replace('///', '', $val['address']);
+            if(!$address) continue;
+            $result = json_decode(file_get_contents($url . $address), true);
+            //0 success 2** error
+            if($status) continue;
+            $latlng = $result['result']['location']['lat'] . ',' . $result['result']['location']['lng'];
+            D('Content')->where('id=%d', $val['id'])->setField('latlng', $latlng);
+        }*/
+        return ;
+    }
+
+}

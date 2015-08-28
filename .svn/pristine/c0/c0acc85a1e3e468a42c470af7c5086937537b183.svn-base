@@ -1,0 +1,171 @@
+<include file="public:header" />
+
+<div id="page-container" class="sidebar-partial sidebar-visible-lg sidebar-no-animations">
+    <div id="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-content">
+                <a href="{:U('Index/index')}" class="sidebar-brand">
+                    <i class="gi gi-stopwatch"></i><strong>管理后台</strong>
+                </a>
+                <ul class="sidebar-nav">
+                    <foreach name="left_menus" item="m">
+                        <if condition="$m['type'] eq 'header'">
+                            <li class="sidebar-header">
+                                <span class="sidebar-header-title"><i class="{$m['icon']}"></i>&nbsp;{$m['title']}</span>
+                            </li>
+                            <else />
+                            <li {$m['is_active']?'class="active"':''}>
+                                <if condition="$m['submenu']">
+                                    <a href="{$m['link']}" onclick="window.location.href='{$m['link']}'" class="sidebar-nav-menu"><i class="fa fa-angle-left sidebar-nav-indicator"></i>{$m['title']}</a>
+                                    <ul>
+                                        <foreach name="m['submenu']" item="m2">
+                                            <if condition="$m2['submenu']">
+                                                <li {$m2['is_active']?'class="active"':''}>
+                                                    <a href="{$m2['link']}" onclick="window.location.href='{$m2['link']}'" class="sidebar-nav-submenu"><i class="fa fa-angle-left sidebar-nav-indicator"></i>{$m2['title']}</a>
+                                                    <ul>
+                                                        <foreach name="m2['submenu']" item="m3">
+                                                            <li>
+                                                                <a {$m3['is_active']?'class="active"':''} href="{$m3['link']}">{$m3['title']}</a>
+                                                            </li>
+                                                        </foreach>
+                                                    </ul>
+                                                </li>
+                                                <else />
+                                                <li>
+                                                    <a {$m2['is_active']?'class="active"':''} href="{$m2['link']}">{$m2['title']}</a>
+                                                </li>
+                                            </if>
+                                        </foreach>
+                                    </ul>
+                                    <else />
+                                    <li>
+                                        <a {$m['is_active']?'class="active"':''} href="{$m['link']}">{$m['title']}</a>
+                                    </li>
+                                </if>
+                            </li>
+                        </if>
+                    </foreach>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="main-container">
+        <!-- <header class="navbar navbar-fixed-top navbar-inverse"> -->
+        <header class="navbar navbar-inverse">
+            <ul class="nav navbar-nav-custom">
+                <li>
+                    <a href="javascript:void(0)" onclick="App.sidebar('toggle-sidebar');">
+                        <i class="fa fa-bars fa-fw"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="{:U('Content/index')}">内容</a>
+                </li>
+                <li>
+                    <a href="{:U('Set/index')}">设置</a>
+                </li>
+                <li>
+                    <a href="{:U('User/index')}">用户</a>
+                </li>
+                <if condition="C('SHOW_MESSAGE')">
+                    <li>
+                        <a href="{:U('Message/index')}">留言</a>
+                    </li>
+                </if>
+                <if condition="C('SHOW_STATISTIC')">
+                    <li>
+                        <a href="{:U('ContentStatistic/index')}">统计</a>
+                    </li>
+                </if>
+            </ul>
+
+            <ul class="nav navbar-nav-custom pull-right">
+                <li>
+                    <a href="{:U('user/render_profile?id='.$login_user['uid'])}" class="ajaxlink" title="点击修改账户密码">
+                        hi，{$login_user['username']}
+                    </a>
+                </li>
+                <li>
+                    <a href="{:U('public/logout')}">退出</a>
+                </li>
+                <li>
+                    <a href="/" target="_blank"><i class="gi gi-home"></i></a>
+                </li>
+            </ul>
+
+        </header>
+        <!-- END Header -->
+
+        <div id="page-content">
+            {__CONTENT__}
+        </div>
+
+        <footer class="clearfix">
+            <div class="pull-right">
+                Crafted by <a href="http://www.justering.com" target="_blank">Justering</a>
+            </div>
+        </footer>
+    </div>
+    <!-- END Main Container -->
+</div>
+<!-- END Page Container -->
+
+<!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
+<a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
+
+<div id="modaldialog"></div>
+
+
+<script type="text/javascript">
+
+    var max_up_size = parseInt(("{:C('PICTURE_UPLOAD.maxSize')}" / 1024/1014));
+    $(document).ready(function() {
+
+        // preview thumb image
+        $(".image_uploadify").each(function(){
+            var key = $(this).attr('value');
+            setTimeout(function () {
+                $("#image_upload_"+key).uploadify({
+                    'formData'        : {'field_key' : key},
+                    "height"          : 30,
+                    "swf"             : "__STATIC__/uploadify/uploadify.swf",
+                    "fileObjName"     : "download",
+                    "buttonText"      : "上传图片(最大"+max_up_size+"M)",
+                    "uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+                    "width"           : 130,
+                    'queueID'         : 'image_upload_preview_'+key,
+                    'removeTimeout'   : 1,
+                    'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+                    "onUploadSuccess" : image_upload_thumb_preview,
+                    'onFallback' : function() {
+                        alert('未检测到兼容版本的Flash.');
+                    }
+                });
+            },0);
+        });
+
+        function image_upload_thumb_preview(file, data) {
+          var data = $.parseJSON(data);
+          var src = '';
+          if(data.status){
+              src = data.url || '__ROOT__' + data.path
+              var field_key = data.field_key;
+
+              $("#image_upload_value_"+field_key).val(src);
+              $("#image_upload_preview_"+field_key).html('<a title="点击预览" href="'+ src +'" target="_blank"><img style="max-width:200px" src="' + src + '"/></a>');
+          } else {
+              alert('上传有误，请联系管理员：');
+          }
+      }
+  });
+</script>
+
+
+<script type="text/javascript" src="__STATIC__/proui/js/magnific-popup.min.js"></script>
+<script type="text/javascript" src="__STATIC__/proui/js/app.js"></script>
+<load href="__STATIC__/js/form_post.js" />
+</body>
+</html>

@@ -1,0 +1,6 @@
+<?php 
+    // var_dump($category, $root_navbar, $current_navbar);
+?>
+<include file="public/breadcrumb" />
+
+

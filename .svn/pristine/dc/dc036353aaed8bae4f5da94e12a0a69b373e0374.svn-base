@@ -1,0 +1,71 @@
+<div id="content-index">
+    <div class="block clearfix">
+        <ul class="nav nav-tabs" role="tablist">
+            <foreach name="statistic_contents" item="cont">
+                <li  data-key="{$key}"><a href="javascript::void(0)">{$cont['display_name']}</a></li>
+            </foreach>
+        </ul>
+        <foreach name="statistic_contents" item="cont" key="pk">
+            <div class="col-md-6 {$pk} col-md-statistic" style="display: none;">
+                <table class="table table-hover table-vcenter">
+                    <tr>
+                        <foreach name="cont['item']" item="sub">
+                            <th>{$sub}</th>
+                        </foreach>
+                    </tr>
+
+                    <foreach name="statistics[$pk]" item="stat">
+                        <foreach name="stat" item="lineone" key='linekey'>
+                            <tr>
+                                <foreach name="cont['item']" item="item_name" key='item_key'>
+                                    <if condition="$item_key eq 'export'">
+                                        <td><a href="javascript::void(0)" class="ajaxlink" id="export-btn" onclick="content_export({$lineone['category_id']}, {$lineone['id']})"><i class="hi hi-export"></i>导出</a></i></td>
+                                    <else />
+                                        <td>{$lineone[$item_key]}</td>
+                                    </if>
+                                </foreach>
+                            </tr>
+                        </foreach>
+                    </foreach>
+                </table>
+            </div>
+        </foreach>
+    </div>
+</div>
+
+<style type="text/css">
+    .widget {border: 1px solid #eaedf1; }
+    .col-md-6 .themed-background {
+        background-color: white;
+        border-bottom: 1px solid #eaedf1;
+    }
+    .col-md-6 .widget .widget-content-light small {
+        color: #333;
+    }
+    .col-md-6 .widget .themed-background {
+        background: #EBEFF4;
+    }
+    .col-md-6 .widget h3 { margin-top: 0; }
+</style>
+<script type="text/javascript">
+
+    $(function(){
+
+        $('.nav-tabs').find('li:eq(0)').addClass('active');
+        $('.col-md-statistic').eq(0).show();
+
+        $('.nav-tabs').on('click', 'li', function(){
+            var selector = $(this).attr('data-key');
+            $(this).parent().find('li').removeClass('active');
+            $(this).addClass('active');
+            $('.col-md-6').hide();
+            $('.' + selector).show();
+
+        })
+
+    })
+
+    function content_export(category_id, content_id) {
+        location.href='/Manage/Content/export_content?category_id=' + category_id  + '&ids='+content_id;
+    }
+</script>

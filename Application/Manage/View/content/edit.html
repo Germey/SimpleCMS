@@ -1,0 +1,216 @@
+<div id="content-edit">
+  <include file="content/breadcrumb" />
+  <div class="block">
+    <form action="{:U('content/save')}" method="post" class="form-horizontal post_ajax_form">
+      <table class="table table-noborder">
+        <tr>
+          <td class="item-label"><span class="text-danger">*</span> 栏目</td>
+          <td>
+            <input type="text" id="category_name" class="pull-left form-control input-sm span1" placeholder="请选择" value="{$category['title']}" readonly="readonly" style="cursor: pointer;" />
+            <div id="category-select-wrapper">
+              <input type="hidden" name="category_id" id="category_id" value="{$category_id}" />
+              <div class="category-select">{:content_category_select($category_tree, '',0, $category_id)}</div>
+            </div>
+            <if condition="$category['enable_children']">
+              <label class="item-label">所属内容</label>
+              <select id="status" name="parent_id" class="pull-left span3 form-control input-sm" style="width:550px">
+                <option vlaue="0">&nbsp;-无-</option>
+                {:select_option($parent_contents, $content['parent_id'])}
+              </select>
+            </if>
+          </td>
+        </tr>
+        <foreach name="model_fields" item="field">
+          <switch name="field.type">
+            <case value="pictures">
+              <tr>
+                <?php 
+                $object_id = $content['id'];
+                $object_type = 'content';
+                $pictures = $content['pictures'];
+                $picture_tip = '点击图片拖拽可排序；在文章中添加组图，默认滚动方式显示在摘要和文章内容中间';
+                ?>
+                <td class="item-label">{$field.title}</td>
+                <td><include file="public/pictures_edit" /></td>
+              </tr>
+            </case>
+            <case value="address">
+              <td class="item-label">{$field.title}</td>
+              <td>
+                <!-- 初始化位置信息 -->
+                <table class="table-address span6">
+                  <tr>
+                    <td class="address-baseinfo">
+                      <select id="province" class="address-select form-control input-sm" style="margin-left: 0px" name="address[]">
+                        <option value="{$content['address'][0]}"></option>
+                      </select>
+                      <select id="city" class="address-select form-control input-sm" name="address[]">
+                        <option value="{$content['address'][1]}"></option>
+                      </select>
+                      <select id="street" class="address-select form-control input-sm" name="address[]">
+                        <option value="{$content['address'][2]}"></option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="text" class="form-control input-sm address-detaill" name="address[]" placeholder="请输入详细地址" value="{$content['address'][3]}">
+                    </td>
+                  </tr>
+                </table>
+                <script type="text/javascript">
+                  $(function(){
+                    setupcity();
+                  })
+                </script>
+              </td>
+            </case>
+            <case value="files">
+              <tr>
+                <?php 
+                $object_id = $content['id'];
+                $object_type = 'content';
+                $files = $content['files'];
+                ?>
+                <td class="item-label">{$field.title}</td>
+                <td><include file="public/files_edit" /> </td>
+              </tr>
+            </case>
+            <case value="latlng">
+              <tr>
+                <td class="item-label">{$field.title}</td>
+                <td><include file="public/latlng_select" /> </td>
+              </tr>
+            </case>
+            <default />
+            {:form_block($key, $field, $content[$key])}
+          </switch>
+        </foreach>
+
+        <if condition="$extend_fields">
+          <tr class="info">
+            <td colspan="2">
+              <input type="hidden" name="extend_field_keys" value="{:implode(',',array_keys($extend_fields))}"/>
+              <i class="fa fa-angle-double-right"></i>扩展字段（{$category['extend']['title']}）
+              <if condition="$category['extend']['description']">
+                <div style="padding:10px 0 0 12px;" class="text-danger">扩展备注：{:nl2br($category['extend']['description'])}</div>
+              </if>
+            </td>
+          </tr>
+          <foreach name="extend_fields" item="field">
+            {:form_block('_extend_'.$key, $field, $content['extend'][$key])}
+          </foreach>
+        </if>
+      </table>
+      
+      <div class="form-group form-actions">
+        <input type="hidden" name="id" value="{$content['id']}">
+        <input type="hidden" name="model_id" value="{$model_id}">
+        <div class="col-md-9 col-md-offset-2">
+          <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript" src="__STATIC__/js/location.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      // 如果没有onclick没有的话，就不能在当前栏目下创建文章
+      var current_cat_id = $("#category_id").val();
+      if(current_cat_id) {
+        var on = $("#"+current_cat_id).attr('onclick');
+      }
+      if(!current_cat_id || !on || on == undefined) {
+        $('#category-select-wrapper').show();
+      }
+
+      // source link不能在循环中赋值，这里补充一下
+      $('#source_link').val("{$content['source_link']}");
+      <if condition="$content['subtitle']">
+        $('#trsubtitle').show();
+      </if>
+
+      // video preview
+      <if condition="$content['video_url']">
+        <if condition="strpos($content['video_url'],'.swf') gt 0">
+          var video_html = '<div><embed src="{$content["video_url"]}" quality="high" width="370" height="250" align="middle" allowScriptAccess="sameDomain" allowFullscreen="true" type="application/x-shockwave-flash"></embed></div>';
+        <else />
+          var video_html = '<iframe frameborder="0" width="370px" height="250px" src="{$content["video_url"]}" allowfullscreen></iframe>';
+        </if>
+        $('#video_url').after(video_html);
+      </if>
+
+      // tags - typeahead
+      $("#tags").tokenInput("{:U('tag/ajax_search_for_input')}", {
+        max_size: 2,
+        theme: "facebook",
+        hintText: "请输入标签",
+      });
+      <foreach name="content['tags']" item="tag">
+        id = "{$tag.tag_id}";
+        name = "{$tag.name}";
+        $("#tags").tokenInput("add", {id : id, name : name});
+      </foreach>
+
+
+      $('#author_name').typeahead({
+        name: 'name',
+        remote : '{:U('author/ajax_search_for_input')}?query=%QUERY',
+      });
+      $('#trauthor_name span.twitter-typeahead').css('float', 'left');
+
+      // category select tree
+      $('#category_name').click(function(e){
+        $("#category-select-wrapper").toggle();
+        e.stopPropagation();
+      });
+
+      // 配合上面的click函数，点击下拉框外面的时候关闭下拉框
+      $(document).click(function(){
+        $("#category-select-wrapper").hide();
+      });
+
+
+      // 定时发布
+      var current_time = "{:date('Y-m-d H:i');}";
+      $('#publish_time').after('<div class="text-muted">默认不填为当前时间；选择当前时间之后的时间，则为定时发送</div>');
+      $('#publish_time').blur(function(){
+        if($('#publish_time').val()>current_time) {
+          $('#status').val(3);
+        }
+      });
+
+    });
+
+    // 
+    function select_category(category_id, category_name) {
+      $("#category_id").val(category_id);
+      $("#category_name").val(category_name);
+      $("#category-select-wrapper").hide(); 
+    }
+
+    $('.is_menu').click(function() {
+      $("#category_id").val('');
+      $("#category_name").val('');
+      alert('频道页不允许发布文档');
+    })
+
+    <if condition="!$content['id']">
+      $('#title').blur(function(){
+        var title = $(this).val();
+        $.post('{:U("ajax_find_repeat")}',{title:title},function(data) {
+          if(data) {
+            var titleTip = $('#title-tip');
+            if(titleTip.length == 0) {
+              $('#title').parent('td').append('<div id="title-tip" style="clear:both"></div>');
+            }
+            $('#title-tip').html('这个文章的标题已经存在，可能会重复发布。<a href="/content/'+data.id+'" target="_blank">查看文章</a>');
+          } else {
+            var titleTip = $('#title-tip');
+            if(titleTip.length !=0) {
+              titleTip.remove();
+            }
+          }
+        },'json')
+      })
+    </if>    
+  </script>

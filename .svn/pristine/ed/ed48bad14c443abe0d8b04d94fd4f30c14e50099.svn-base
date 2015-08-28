@@ -1,0 +1,77 @@
+<?php
+
+namespace Manage\Controller;
+use Think\Controller;
+use Common\Api\MailApi;
+
+class MessageController extends ManageBaseController {
+
+
+    public function __construct() {
+        parent::__construct();
+        $this->left_menus = $this->_generate_menus();
+        $this->msg_fields = D('Field')->getMessageFields();
+    }
+
+    public function index(){
+        $this->list = $this->lists(D('Message'), null, 'id desc');
+        Cookie('__forward__',$_SERVER['REQUEST_URI']);
+        $this->display();
+    }
+
+    public function edit() {
+        $id = I('get.id');
+        $this->msg = D('Message')->where('id=%d', $id)->find();
+        $this->display();
+    }
+
+    public function save(){
+        $data = I('post.');
+        $data['update_user_name'] = $this->login_user['username'];
+        $data['update_user_id'] = UID;
+        $data['update_time'] = date('Y-m-d H:i:s');
+
+        $msg_obj = D('Message');
+        if($msg_obj->create($data)){
+            $id =  $msg_obj->saveOrUpdate();
+        }
+
+        $m = D("Message")->getById($id);
+        if($data['reply_to'] && valid_email($data['reply_to'])) {
+            $subject = '感谢您关注'.D("Config")->getConfigValue('title').'，你的问题回复如下';
+            $body = '<p><b style="color:#e74c3c">问题：</b><br>'.$m['content'].'</p>';
+            $body .= '<p><b style="color:#e74c3c">回答：</b><br>'.nl2br($m['admin_note']).'</p>';
+
+            $contact_email = D("Config")->getConfigValue('contact_email');
+            if($contact_email) {
+                $bcc[] = $contact_email;
+            }
+            $mail_res = MailApi::sendEmail(NULL, $data['reply_to'], $subject, $body, null, $bcc);
+        }
+
+        session('highlight_id', $id);
+        $this->success('保存成功', Cookie('__forward__'));
+    }
+
+    public function delete(){
+        $id = I('get.id');
+        D('Message')->where('id=%d', $id)->delete();
+        session('success', '删除留言成功' );
+        json(NULL, 'refresh');
+    }
+
+    private function _generate_menus() {
+        $menus = array(
+                array('title'=>'留言管理', 'icon' => 'fa fa-user', 'type'=>'header'),
+                array('title'=>'用户留言', 'link'=>U('Message/index'), 'name' => 'index', ),
+        );
+
+        // 设置选中的
+        foreach ($menus as $k => $v) {
+            if(strtolower(ACTION_NAME)==$v['name']) {
+                $menus[$k]['is_active'] = 1;
+            }
+        }
+        return $menus;
+    }
+}

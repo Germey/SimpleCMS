@@ -1,0 +1,55 @@
+{__NOLAYOUT__}
+<include file="public/header" />
+<script>
+    //ie浏览器低版本判断提醒
+    var b_version=navigator.appVersion
+    var version=b_version.split(";")+'';
+    if(version.indexOf('MSIE 6.0') !=-1 || version.indexOf('MSIE 7.0') !=-1 || version.indexOf('MSIE 8.0') !=-1)
+    {
+        alert('你的浏览器版本过低，请使用ie9及以上，或者谷歌、火狐等浏览器，否则可能导致某些后台功能用不到');
+    } 
+</script>
+<div id="login-container" class="animation-fadeIn">
+    <div class="login-title text-center">
+        <h1>登录网站后台</h1>
+    </div>
+
+    <div class="block remove-margin">
+        <form action="{:U('login')}" method="post" id="form-login" class="form-horizontal form-bordered post_ajax_form">
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="gi gi-user"></i></span>
+                        <input type="text" id="username" name="username" class="form-control input-lg" placeholder="用户名">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="gi gi-asterisk"></i></span>
+                        <input type="password" id="password" name="password" class="form-control input-lg" placeholder="密码">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="gi gi-lock"></i></span>
+                        <input type="text" id="captcha" name="captcha" class="form-control input-lg" placeholder="验证码" style="width:280px">
+                        <img id="captcha_img" title="点击刷新验证码" src="{:U('Public/captcha')}" 
+                            onclick="jQuery('#captcha_img').attr('src','{:U('Public/captcha')}?'+ Math.random())"  style="cursor: pointer;height:45px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group form-actions">
+                <div class="col-xs-12 text-center">
+                    <button type="submit" class="btn btn-primary" data-loading-text="登录中..."><i class="fa fa-angle-right"></i> 登录</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<load  href="__STATIC__/js/form_post.js" />

@@ -1,0 +1,53 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+    <div class="block">
+        <table id="general-table" class="table table-vcenter table-hover">
+            <thead>
+                <tr>
+                    <!-- <th style="width:10px;padding:8px 2px"><input class="check-all-content" type="checkbox"></th> -->
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>时间</th>
+                    <th>内容</th>
+                    <th>回复</th>
+                    <th style="width:74px">状态</th>
+                    <th style="width:120px">操作</th>
+               </tr>
+           </thead>
+           <tbody>
+                <?php $hilight_id = session('highlight_id', NULL); ?>
+                <foreach name="list" item="one">
+                    <tr  <if condition="$hilight_id==$one['id']">class="success" </if> >
+                        <!-- <td><input class="check-all-content" type="checkbox"></td> -->
+                        <td nowrap>{$one['username']}</td>
+                        <td nowrap>{$one['email']}</td>
+                        <td nowrap>{:substr($one['create_time'],0,16)}</td>
+                        <td>{:nl2br($one['content'])}</td>
+                        <td>
+                            <if condition="$one['update_user_name']">
+                                <div class="text-muted">{$one['update_user_name']} @ {:substr($one['update_time'],0,16)}</div>
+                                {:nl2br($one['admin_note'])}
+                            </if>
+                        </td>
+                        <td>
+                            <if condition="$one['status']">
+                                <i class="gi gi-ok_2" style="color:green"></i>
+                            <else />
+                                未发布
+                            </if>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-xs">
+                                <a href="{:U('Message/edit?id='.$one['id'])}" title="编辑" class="btn btn-default"><i class="hi hi-pencil"></i></a>
+                                <a href="{:U('Message/delete?id='.$one['id'])}" title="删除"class="btn btn-default ajaxlink" ask="确定删除么?">
+                                    <i class="hi hi-remove"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+        {$_page}
+    </div>
+</div>

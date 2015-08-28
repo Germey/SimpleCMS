@@ -1,0 +1,53 @@
+<div class="container" style="padding-top:20px;">
+
+    <include file="article/list_left" />
+
+    <div class="listright">
+        
+            <a name="videoframe"></a>
+                <article:lists name="videos" category="192" row="1">
+                    <div id="embed_video">
+                        <embed src="{$videos['video_url']}" quality="high" width="1000" height="600" align="middle" allowScriptAccess="sameDomain" allowFullscreen="true" type="application/x-shockwave-flash">
+                        </embed>
+                        <div class="well">
+                            <h5>{$videos['title']}</h5>
+                            <div><small>{$videos['summary']}</small></div>
+                        </div>
+                    </div>
+                </article:lists>
+          
+            <div>
+              <ul class="pagelist videolist">
+                <article:lists name="lists" category="192">
+                    <li class='<if condition="($key+1)%4==0">last</if> <if condition="$key==0">on</if>'  
+                        href="javascript:void(0)" onclick="change_video_link('{$lists['video_url']}', '{$lists['title']}', '{$lists['summary']}', this)" >
+                        <a href="javascript:void(0)">
+                            <img src="{:thumb($lists['thumb'],250,165)}" />
+                            <div><small>{:get_short($lists['title'],32)}</small></div>
+                        </a>
+                    </li>
+                </article:lists>
+              </ul>
+              <div class="clear">{$pagestring}</div>
+           </div>
+
+        <script type="text/javascript">
+            //切换视频
+            function change_video_link(new_link, title, summary, item) {
+                //$('#embed_video').attr('src', new_link);
+                var html = '<embed src="'+ new_link +'" quality="high" width="1000" height="600" align="middle" allowScriptAccess="sameDomain" allowFullscreen="true" type="application/x-shockwave-flash"></embed>';
+                html += '<div class="well"><p><b>'+title+'</b></p><div><small>'+summary+'</small></div></div>';
+
+                $("#embed_video").html(html);
+
+                $("ul.videolist li").removeClass('on');
+                $(item).addClass('on');
+
+                $(document).scrollTop(300);
+            }
+            
+        </script>
+
+    </div>
+
+</div>

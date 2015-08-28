@@ -1,0 +1,46 @@
+<?php
+namespace Home\Controller;
+
+class CategoryController extends HomeController {
+
+    public function type($id = 0){
+        /* 标识正确性检测 */
+        $id = $id ? $id : I('get.category');
+        if(!$id) {
+            $this->error('没有指定文档分类！');
+        }
+
+        /* 获取分类信息 */
+        $category = D('Category')->info($id);
+        if($category){
+            $this->assign('category', $category);
+            $data = D('Category')->set_current_nav($category);
+            
+            //根据类型分配模板
+            $tpl = $this->get_category_template($category);
+            $this->root_navbar = $data['root_navbar'];
+            $this->current_navbar = $data['current_navbar'];
+            $this->display($tpl);
+        } else {
+            $this->error('分类不存在或被禁用！');
+        }
+
+    }
+
+    public function get_category_template($category) {
+
+       $tpl = array(
+            1 => array('tpl_type'=> 'template_index', 'default' =>'category/index'),
+            2 => array('tpl_type'=> 'template_list', 'default' =>'category/list'),
+            4 => array('tpl_type'=> 'template_single', 'default' =>'category/single'),
+            );
+       $type = $tpl[$category['type']]['tpl_type'];
+       if( $category[$type] ) {
+            return $category[$type];
+       }else {
+            return $tpl[$category['type']]['default'];
+       }
+      
+    }
+
+}

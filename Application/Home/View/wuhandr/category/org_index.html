@@ -1,0 +1,65 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <include file="public/breadcrumb" />
+    <div class="listleft">
+        <include file="public/category_tags" />
+        <table class="table table-striped">           
+            <article:lists name="one" category="$category['id']" ispage="true"  tag_id="$_GET['stid']" row="10">
+                <tr>
+                    <td style="width:190px">
+                        <a target="_blank" href="{$one['content']?$one['link']:$one['source_link']}">
+                            <img src="{:thumb($one['thumb'],160,0)}" style="width:180px;">
+                        </a>
+                    </td>
+                    <td>
+                        <h5>
+                            <if condition="$one['category_id'] neq $category['id']">
+                                【<a href="/category/{$one['category_id']}">{$one['category_name']}</a>】
+                            </if>
+                            <if condition="$one['content']">
+                                <a href="{$one['link']}">{$one['title']}</a>
+                            <else />
+                                {$one['title']}
+                            </if>
+                        </h5>
+                        
+                        <p class="summary">
+                            <p style="color:#666">{$one['summary']?nl2br($one['summary']):get_short(strip_tags($one['content']),200)}</p>
+
+                        </p>
+
+                        <if condition="$one['source_link']">
+                            <p><small>
+                                <b>网站：</b>
+                                <a href="{$one['source_link']}" target="_blank">{:get_short($one['source_link'],60)}</a>
+                            </small></p>
+                        </if>
+
+                        <if condition="$one['tags']">
+                            <p><small>
+                                <b>标签：</b>
+                                <foreach name="one['tags']" item="t">
+                                    <a style="color: #3a87ad" href="/category/{$category['id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                                </foreach>
+                            </small></p>
+                        </if>
+
+                        <if condition="$one['content']">
+                            <div class="more"><a href="{$one['link']}">查看详情 ››</a></div>
+                        </if>
+                    </td>
+                </tr>
+            </article:lists>
+
+        </table>
+        <div class="pagestring">{$pagestring}</div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="listright">
+        <include file="category/related_category" />
+        <include file="public/side_ads" />
+    </div>
+
+</div>

@@ -1,0 +1,28 @@
+<include file="public/category_head" />
+<div class="container">
+    <include file="public/breadcrumb" />
+    <div class="listleft">
+        <include file="public/category_tags" />
+        <div class="list-box">
+            <ul class="pagelist">
+                <article:lists name="one" category="$category['id']" ispage="true" row="9" tag_id="$_GET['stid']" >
+                    <li <if condition="($key+1)%3==0">class="last"</if>>
+                        <a href="{$one['link']}">
+                            <img src="{:thumb($one['thumb'], 206,206)}" />
+                            <h5>{:get_short($one['title'], 50)}</h5>
+                            <div>{:get_short(nl2br(trim($one['summary']?$one['summary']:strip_tags($one['content']))), 60)}</div>
+                        </a>
+                    </li>
+                </article:lists>
+            </ul>
+            <div class="clearfix"></div>
+            <div class="pagestring">{$pagestring}</div>
+        </div>
+    </div>
+
+    <div class="listright">
+        <include file="category/related_category" />
+        <include file="public/side_ads" />
+    </div>
+    
+</div>

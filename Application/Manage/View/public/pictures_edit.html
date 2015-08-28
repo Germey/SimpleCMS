@@ -1,0 +1,100 @@
+<div class="clear box">
+  <if condition="$picture_tip">
+    <div class="text-muted"><i class=""></i>{$picture_tip}</div>
+  </if>
+
+  <input type="file" id="picture-upload" class="f-input" style="width:400px"/>
+  <div id="picture-custom-queue"></div>
+  <div class="picture-wrapper">
+    <table id="picture-table" class="table table-dashed picture-upload">
+      <if condition="$pictures">
+        <foreach name="pictures" item="one">
+          <tr class="couldsort" id="trimage{$one['picture_id']}">
+            <td><span class="trimage{$one['picture_id']}" title="单击预览，拖拽排序"><img src="/Public/Manage/css/img/dragsort_flag.png"></span></td>
+            <td>
+              <input type="hidden" name="picture_ids[]" value="{$one['picture_id']}" />
+              <a href="{$one['path']}" data-toggle="lightbox-image" ><img class="preview" src="{:thumb($one['path'],160,120)}" /></a>
+            </td>
+            <td>
+              <div class="form-inline"><label class="control-label">链接</label> <input type="text" class="form-control input-sm" name="picture_link{$one['picture_id']}" placeholder="http://" value="{$one['link']}"></div>
+              <div class="form-inline"><label class="control-label">标题</label> <input type="text" class="form-control input-sm" name="picture_title{$one['picture_id']}" value="{$one['title']}"></div>
+              <div class="form-inline"><label class="control-label">简述</label> <textarea name="picture_summary{$one['picture_id']}" type="text" class="form-control input-sm">{$one['summary']}</textarea>
+              </td>
+              <td>
+                <a href="javascript:void(0);" onclick="remove_image({$one['picture_id']});"><i class="fa fa-times fa-2x text-danger"></i></a>
+              </td>
+            </tr>
+          </foreach>
+        </if>
+      </table>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+
+      //初始化 因为要和下面一个一个增加的方式配合，不能一齐用class触发
+      <foreach name="pictures" item="one">
+        trigger_sort({$one['picture_id']});
+      </foreach>
+
+      var max_up_size = parseInt(("{:C('PICTURE_UPLOAD.maxSize')}" / 1024/1014));
+      setTimeout(function () {
+        $('#picture-upload').uploadify({
+          'swf' : "__STATIC__/uploadify/uploadify.swf",
+          "uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+          "buttonText"      : "上传文件(可多选，单个文件最大"+max_up_size+"M)",
+          'queueID'         : 'picture-custom-queue',
+          "fileObjName"     : "download",
+          'multi'           : true,
+          "width"           : 234,
+          'onUploadSuccess' : function(file, data) {
+            var data = $.parseJSON(data);
+
+            if(data.status){
+
+              var idx = data.id;
+              var str = '<tr class="couldsort" id="trimage'+idx+'"><td><span class="trimage'+idx+'"><img src="/Public/Manage/css/img/dragsort_flag.png"></span></td><td class="img"><div><input type="hidden" name="picture_ids[]" value="'+idx+'"/><img class="preview" src="'+data.path+'" /></td>';
+
+              str += '<td><div class="form-inline"><label class="control-label">链接</label> <input type="text" class="form-control input-sm" name="picture_link'+idx+'" placeholder="http://"></div>';
+              str += '<div class="form-inline"><label class="control-label">标题</label> <input type="text" class="form-control input-sm" name="picture_title'+idx+'"></div>';
+              str += '<div class="form-inline"><label class="control-label">简述</label> <textarea name="picture_summary'+idx+'" type="text" class="form-control input-sm"></textarea></td>';
+              str += '<td><a href="javascript:void(0);" onclick="remove_image('+ idx +');"><i class="fa fa-times fa-2x text-danger"></i></a></td></tr>';
+
+              $("#picture-table").prepend(str);
+
+                  // 触发新文件和原来文件的排序
+                  trigger_sort(idx);
+
+                } else {
+                  alert('上传有误，请联系管理员：');
+                }
+              },
+            });
+      },0);
+});
+
+function remove_image(id) {
+  if(!id) return;
+  if(window.confirm("是否确认删除该图片？")) {
+    $("#trimage" + id).remove();
+  }
+}
+
+function trigger_sort(id) {
+ if(!id) return;
+ $("#picture-table").dragsort({
+  itemSelector: "tr",
+  dragSelector: ".trimage" + id ,
+  dragBetween: true,
+  dragEnd: pic_dragsort,
+  placeHolderTemplate: "<tr ></tr>"
+});
+
+}
+
+
+//注意：没有这个end 方法会报错
+function pic_dragsort() {}
+</script>

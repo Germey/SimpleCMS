@@ -1,0 +1,19 @@
+<div id="footer">
+    <div class="container">
+        <div style="float: left; width: 400px;">        
+            <p class='footer-nav'>{:C('custom_footer_navs')}</p>
+            <p>Copyright ©{:date('Y')} {:C('site_copyright')}</p>
+            <p>{:C('site_icp')} &nbsp;&nbsp;技术支持：<a href="http://justering.com" target="_blank">佳信德润</a>
+            </p>
+        </div>
+        <div style="float:right; width: 600px;text-align: right;">
+          <?php $links = D('Banner')->getBannerByName('friend_links'); ?>
+          <foreach name="links" item="one">
+            <a href="{$one['link']}" target="_blank"><img src="{:thumb($one['path'],0,100)}" alt="{$one['title']}" /></a>&nbsp;&nbsp;
+          </foreach>
+        </div>
+    </div>
+</div>
+{:D('Config')->getConfigValue('analytics')}
+<body>
+</html>

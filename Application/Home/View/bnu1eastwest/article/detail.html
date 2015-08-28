@@ -1,0 +1,30 @@
+<div id="" class="container detail" style="padding-top:20px;">
+    <include file="article/list_left" />
+    <div class="listright">
+        <div class="list-box">
+            <div class="info-head text-center">
+                <h4>{$info['title']}</h4>
+            </div>
+            <div class="source-box">
+              <if condition="$info['source_name']">
+                 <a href="{$info['source_link']}" target="_blank">{$info['source_name']}</a>
+              </if>
+               &nbsp;&nbsp;<span class="muted">{:substr($info['publish_time'],0,16)}</span>
+            </div>
+            <div style="padding:0 30px;">
+                <if condition="$info['summary']">
+                    <if condition="$info['category_id'] eq 53">
+                        <div><span class="label label-info">演讲嘉宾</span></div>
+                    </if>
+                    <div class="alert alert-info">
+                        {:nl2br($info['summary'])}
+                    </div>
+                </if>
+            </div>
+           
+            <div class="info-content">
+                {$info['content']}
+            </div>
+        </div>
+    </div>
+</div>

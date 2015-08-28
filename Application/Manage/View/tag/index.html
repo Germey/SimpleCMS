@@ -1,0 +1,56 @@
+<div id="content-index">
+    <div class="content-header">
+        <div class="header-section">
+            <form method="get">
+                <table>
+                    <tr>
+                        <td><a href="{:U('edit')}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> 新增标签</a></td>
+                        <td>
+                            <div class="input-group">
+                              <input class="form-control input-sm" name="sname" value="{$sname}" placeholder="标签名" />
+                              <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="submit">搜索</button>
+                              </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <div class="block">
+        <table id="general-table" class="table table-striped table-vcenter table-hover">
+            <thead>
+                <tr>
+                    <th nowrap>标签名称</th>
+                    <th>简介</th>
+                    <th nowrap>使用次数</th>
+                    <th style="width:80px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $hilight_id = session('highlight_id', NULL);?>
+                <foreach name="tags" item="one">
+                    <tr <if condition="$hilight_id eq $one['id']">class="success"</if> >
+                        <td nowrap>{$one['name']}</td>
+                        <td>{:nl2br($one['description'])}</td>
+                        <td>{$tag_content_map[$one['id']]}</td>
+                        <td nowrap>
+                            <if condition="$login_user['role'] eq 'manager'">
+                                <div class="btn-group btn-group-xs">
+                                    <a href="{:U('edit?id='.$one['id'])}" title="编辑" class="btn btn-default"><i class="hi hi-pencil"></i></a>
+                                    <a href="{:U('tag/delete?id='.$one['id'])}" title="删除" class="btn btn-default ajaxlink" ask="确认要删除该记录?" >
+                                        <i class="{$one_content['status']<10?'hi hi-trash':'hi hi-remove'}"></i>
+                                    </a>
+                                </div>
+                            </if>
+                        </td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+        {$_page}
+        <div class="clearfix"></div>
+    </div>
+</div>

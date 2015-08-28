@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+
+    <title>内容管理后台</title>
+    <meta name="author" content="Justering">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Justeirng CMS">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+
+    <!-- Stylesheets -->
+    <!-- Bootstrap is included in its original form, unaltered -->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/bootstrap/css/bootstrap3.1.1.min.css" />
+    <!-- Related styles of various icon packs and plugins -->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/proui/css/magnific-popup.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/proui/css/plugins.css" />
+
+    <link rel="stylesheet" type="text/css" href="__STATIC__/proui/css/main.css" />
+
+    <!-- <link id="theme-link" rel="stylesheet" href="__STATIC__/proui/css/themes/flatie.css"> -->
+
+    <link rel="stylesheet" type="text/css" href="__STATIC__/proui/css/themes.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/proui/css/css3-cheat.css" />
+
+    <link rel="stylesheet" type="text/css" href="__CSS__/style.css" />
+
+    <script type="text/javascript" src="__STATIC__/proui/js/modernizr-2.7.1-respond-1.4.2.min.js"></script>
+
+    <script type="text/javascript" src="/Public/Static/jquery-2.0.3.min.js"></script>    
+    <script type="text/javascript" src="__STATIC__/bootstrap/js/bootstrap3.1.1.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/proui/js/plugins.js"></script>
+    <script type="text/javascript" src="__STATIC__/proui/js/slim-scroll.min.js"></script>
+
+    <load href="__STATIC__/ueditor1_4_3/ueditor.config.js" />
+    <load href="__STATIC__/ueditor1_4_3/ueditor.all.js" />
+
+    <load href="__STATIC__/jssrc/map.js" />
+    <load href="__STATIC__/jssrc/application.js" />
+    <load href="__STATIC__/jssrc/customize.js" />
+
+    <load href="__STATIC__/jquery.datepicker/datepicker.js" />
+    <load href="__STATIC__/jquery.datepicker/datepicker.css" />
+
+    <load href="__STATIC__/jquery.tokeninput/jquery.tokeninput.js" />
+    <load href="__STATIC__/jquery.tokeninput/token-input.css" />
+    <load href="__STATIC__/jquery.tokeninput/token-input-facebook.css" />
+
+    <load href="__STATIC__/jquery.typeahead.js" />
+
+    <load href="__STATIC__/uploadify/jquery.uploadify.min.js" />
+    <load href="__STATIC__/uploadify/uploadify.css" />
+
+    <load href="__STATIC__/dragsort/jquery.dragsort-0.5.1.js" />
+
+    <load href="__STATIC__/colortip/colortip-1.0-jquery.js" />
+    <load href="__STATIC__/colortip/colortip-1.0-jquery.css" />
+
+<!--notify start-->
+<load href="__STATIC__/noty/packaged/jquery.noty.packaged.js" />
+<script type="text/javascript">
+    function display_noty(text, type) {
+        if(!type) {
+            type = 'error';
+        }
+        var n = noty({
+            text        : text,
+            type        : type,
+            dismissQueue: true,
+            layout      : 'topCenter',
+            theme       : 'defaultTheme',
+            timeout     : 4000,
+        });
+    }
+
+    $(document).ready(function() {
+        var session_success_msg = '{:session("success", NULL)}';
+        if(session_success_msg) {
+            display_noty(session_success_msg, 'success');
+        }
+
+        var session_error_msg = '{:session("error", NULL)}';
+        if(session_error_msg) {
+            display_noty(session_error_msg, 'error'); 
+        }
+    });
+</script>
+<!--notify end-->
+<script type="text/javascript" src="/Public/Manage/js/common.js"></script>    
+ 
+</head>
+<body>

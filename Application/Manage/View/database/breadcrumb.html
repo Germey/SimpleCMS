@@ -1,0 +1,12 @@
+<?php
+    $submenu = D('Database')->sub_menu();
+    $type = htmlspecialchars($_GET['type']);
+    $breads[$submenu[$type]['link']] = $submenu[$type]['title'];
+    // var_dump($type,$submenu,$breads);
+?>
+<ul class="breadcrumb breadcrumb-top">
+    <foreach name="breads" item="one">
+        <li><a href="{$key}">{$one}</a></li>
+    </foreach>
+</ul>
+

@@ -1,0 +1,45 @@
+<include file="public/category_head" />
+
+<div class="container detail">
+    <div class="listleft">
+        <include file="public/breadcrumb" />
+        <div class="info-content">
+            <div class="single">
+                {$category['content']}
+            </div>
+        </div>
+    </div>
+
+    <div class="listright">
+        <?php
+            $subchildren = D('Category')->getChildren($category['id']);
+        ?>
+        <if condition="$subchildren">
+            <div class="list-box">
+                <div class="list-box-head">{$category['title']}</div>
+                <foreach name="subchildren" item="one">
+                    <a href="{$one['link']}">
+                        <div class="list-content">
+                            {$one['title']}
+                        </div>
+                    </a>
+                </foreach>
+            </div>
+        </if>
+        
+
+        <div class="list-box">
+            <div class="list-box-head">关于我们</div>
+            <?php 
+                $abouts = D('Category')->getChildren('about'); 
+            ?>
+            <foreach name="abouts" item="one">
+                <a href="{$one['link']}">
+                    <div class="list-content {$one['id']==$category['id']?'list-content-selected':''}">
+                        {$one['title']}
+                    </div>
+                </a>
+            </foreach>
+        </div>
+    </div>
+</div>

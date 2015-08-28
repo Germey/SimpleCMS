@@ -1,0 +1,15 @@
+<?php
+    $breads[U('index')] = '设置';
+
+
+    // var_dump($breads);
+?>
+<ul class="breadcrumb breadcrumb-top">
+    <foreach name="breads" item="one">
+        <li><a href="{$key}">{$one}</a></li>
+    </foreach>
+    <if condition="$content">
+        <li class="text-muted">{$content['title']}</li>
+    </if>
+</ul>
+

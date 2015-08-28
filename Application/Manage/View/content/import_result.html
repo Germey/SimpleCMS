@@ -1,0 +1,18 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+    <div class="col-md-12 block">
+        <div class="alert  alert-success">
+           恭喜您，您已成功导入{:count($result['success'])}记录
+        </div>
+        <notempty name="result['error']">
+            <div class="alert  alert-warning">
+                <p>您已失败导入{:count($result['error'])}记录</p>
+                <foreach name="result['error']" item="err">
+                   <p>失败原因：{$err['error']}</p>
+                </foreach>
+            </div>
+        </notempty>
+         <a href="/Manage/content/index/cid/{$category_id}" class="btn btn-sm btn-success">返回列表</a>
+    </div>
+    <div class="clearfix"></div>
+</div>

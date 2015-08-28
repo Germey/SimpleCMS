@@ -1,0 +1,44 @@
+<?php
+    $models = D("Model")->getModels();
+
+    // 默认是全部
+    $exist_ids = array_keys($models);
+
+    // 已经选择了的按照选择了的走
+    $current_models = array();
+    if($key=='children_models') {
+        $current_models = $category['children_models'];
+        $name_id = 'children_model_ids';
+        $name_name = 'children_model_templates';
+    } else {
+        $current_models = $category['models'];
+        $name_id = 'model_ids';
+        $name_name = 'model_templates';
+    }
+    if($current_models) {
+        $exist_ids = array_keys($current_models);
+    }
+
+?>
+<div style="padding: 0px 5px;border-left: 3px solid #eee;">
+    <table class="table table-noborder table-vcenter">
+        <tr><th style="width:44px" nowrap>允许</th><th style="width:50px" nowrap>模型</th><th>内容页模板</th></tr>
+        <foreach name="models" item="one">
+            <tr>
+                <td class="text-center">
+                    <input type="checkbox" name="{$name_id}{$one['id']}" value="{$one['id']}" 
+                      <if condition="in_array($one['id'], $exist_ids)">checked</if>  />
+                </td>
+                <td>{$one['name']}</td>
+                <td>
+                    <if condition="$one['template']">
+                        <input type="text" name="{$name_name}{$one['id']}" class="span3 form-control input-sm" 
+                            value="{$current_models[$one['id']]?$current_models[$one['id']]:$one['template']}" />
+                    <else />
+                        -
+                    </if>
+                </td>
+            </tr>
+        </foreach>
+    </table>
+</div>

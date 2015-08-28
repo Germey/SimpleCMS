@@ -1,0 +1,57 @@
+<div class="cat-title-block">
+    <div class="container" >
+        {$category['title']}
+    </div>
+</div>
+
+<div class="container detail history">
+    <div class="listleft">
+        <include file="public/breadcrumb" />
+        <?php 
+            $cs = D("Content")->getPagesByTypeId($category['id'],0,0,0,0,'id'); 
+            $active_item = count($cs)-1;
+        ?>
+        <div class="tabbable">
+          <ul class="nav nav-pills">        
+            <foreach name="cs" item="year">
+              <li <if condition="$key==$active_item">class="active"</if>><a href="#tab{$key}" data-toggle="tab">{$year['title']}</a></li>
+            </foreach>
+          </ul>
+          <div class="tab-content">
+            <foreach name="cs" item="one">
+              <div class="tab-pane <if condition='$key==$active_item'>active</if>" id="tab{$key}">
+                 <div id="tabcontent{$key}">
+                    <div class="info-content">
+                        <if condition="$one['children_pages']">
+                            <foreach name="one['children_pages']" key="k" item="pone">
+                                <h4 style="color:#63943B;margin-top:30px;">{$pone['title']}</h4>
+                                <div>{:trim($pone['content'])}</div>
+                            </foreach>
+                        <else />
+                            {$one['content']}
+                        </if>
+                    </div>
+                  </div>
+                </div>
+            </foreach>
+          </div>
+        </div>
+
+    </div>
+
+    <div class="listright">
+        <div class="list-box">
+            <div class="list-box-head">关于我们</div>
+            <?php 
+                $abouts = D('Category')->getChildren('about'); 
+            ?>
+            <foreach name="abouts" item="one">
+                <a href="{$one['link']}">
+                    <div class="list-content {$one['id']==$category['id']?'list-content-selected':''}">
+                        {$one['title']}
+                    </div>
+                </a>
+            </foreach>
+        </div>
+    </div>
+</div>

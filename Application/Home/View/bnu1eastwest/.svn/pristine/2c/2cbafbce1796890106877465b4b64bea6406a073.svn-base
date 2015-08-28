@@ -1,0 +1,28 @@
+<div class="container" style="padding-top:20px;">
+
+    <include file="article/list_left" />
+
+    <div class="listright">
+        <div class="list-box">
+            <div class="list-box-head">{$current_navbar['title']}</div>
+            <article:lists name="news" category="$category['id']" ispage="true">
+                <div class="list-content">
+                    <dl class="dl-horizontal list-dl">
+                        <dt><a href="{$news['link']}"><img src="{:thumb($news['thumb'],280,168)}" alt="{$new['title']}"></a></dt>
+                        <dd><h4 style="line-height:27px"><a href="{$news['link']}">{$news['title']}</a></h4></dd>
+                        <dd><p class="muted" style="text-align:right">{:substr($news['publish_time'],0,16)}</p></dd>
+                        <dd><p style="color:#666">
+                            <if condition="$news['summary']">
+                                {:get_short($news['summary'], 200)}</p>
+                            <else />
+                                {:get_short(strip_tags($news['content']), 200)}</p>
+                            </if>
+                        </dd>
+                        <dd class="more" style="font-size:12px"><a href="{$news['link']}">查看详情&nbsp;»</a></dd>
+                    </dl>
+                </div>
+            </article:lists>
+            <div class="pagestring">{$pagestring}</div>
+        </div>
+    </div>
+</div><!-- / -->

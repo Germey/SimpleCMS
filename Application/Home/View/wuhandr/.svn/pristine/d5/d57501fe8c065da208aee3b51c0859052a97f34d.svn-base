@@ -1,0 +1,61 @@
+<include file="public/category_head" />
+
+<div class="container detail">
+    <div class="listleft">
+        <include file="public/breadcrumb" />
+
+        <div class="main-content">
+            <div class="info-head text-center">
+                <h4>{$info['title']}</h4>
+            </div>
+
+            <if condition="$info['source_link']">
+                <p><small>
+                    <b>网站：</b>
+                    <a href="{$info['source_link']}" target="_blank">{$info['source_link']}</a>
+                </small></p>
+            </if>
+            <if condition="$info['tags']">
+                <p><small>
+                    <b>标签：</b>
+                    <foreach name="info['tags']" item="t">
+                        <a style="color: #3a87ad" href="/category/{$info['category_id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                    </foreach>
+                </small></p>
+            </if>
+
+            <if condition="$info['summary']">
+              <blockquote>
+                  {:nl2br($info['summary'])}
+              </blockquote>                
+            </if>
+
+            <div class="info-content">
+                {$info['content']}
+            </div>
+
+        </div>
+    </div>
+
+    <div class="listright">
+        <div class="list-box">
+            <div class="list-box-head">相关文章</div>
+            <ul class="simple">            
+              <article:lists name="one" category="$category['id']" ispage="false" row="6">
+                  <li><a href="{$one['link']}">{:get_short($one['title'],28)}</a></li>
+              </article:lists>
+            </ul>
+        </div>
+
+        <div class="list-box" style="text-align:center">
+          <?php $ads = D('Banner')->getBannerByName('side_ads'); ?>
+          <foreach name="ads" item="one">
+              <div>
+                <a href="{$one['link']}" target="_blank">
+                  <img src="{:thumb($one['path'],225,0)}" alt="{$one['title']}" style="margin-top: 15px; max-width: 225px;">
+                </a>
+              </div>
+          </foreach>
+        </div>
+    </div>
+</div>

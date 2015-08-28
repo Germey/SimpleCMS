@@ -1,0 +1,23 @@
+<?php
+    $cat_ids = D("Category")->getChildrenId($category['id']);
+    $cat_ids[] = $category['id'];
+
+    $tags = D('Tag')->getTagsWeight($cat_ids);
+    $stid = intval($_GET['stid']);
+?>
+
+<if condition="$tags">
+    <form action="/category/{$category['id']}" method="get">
+        <a class="label label-tag {$stid?'':'label-select'}" href="?stid=0">全部标签</a>
+        <foreach name="tags" item="one">
+            <a class="label label-tag {$stid==$one['tag_id']?'label-select':''}" href="?stid={$one['tag_id']}">
+                {$one['name']}&nbsp;<b>[<span title="对应文章数">{$one['count']}</span>]</b>
+            </a>
+        </foreach>
+    </form>
+</if>
+<div class="clear"></div>
+
+<if condition="$category['banner']">
+    <div style="margin-bottom: 20px"><img src="{:thumb($category['banner'],740,0)}" /></div>
+</if>

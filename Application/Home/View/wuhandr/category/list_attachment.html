@@ -1,0 +1,13 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <include file="public/breadcrumb" />
+    <ul class="attachlist">
+        <?php $idx=0; ?>
+        <article:lists name="pone" category="$category['id']" ispage="true" row="6">
+            <include file="category/attach_li" />
+            <?php $idx++; ?>
+        </article:lists>
+    </ul>
+    <div class="clear"></div>
+</div>

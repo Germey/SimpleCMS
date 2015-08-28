@@ -1,0 +1,33 @@
+<include file="public:html_header" />
+<div class="top">
+    <div class="container text-center">
+        <a class="logo" href="/"><img src="__IMG__/logo.png" alt="{:C('site_title')}"/></a>
+        <div class="right-social">
+          <a href="/category/english" class="efont" style="font-size: 15px;">English</a>&nbsp;&nbsp;
+          <?php $socials = D('Banner')->getBannerByName('top_socials'); ?>
+          <foreach name="socials" item="one">
+                <a href="{$one['link']}" target="_blank" title="{$one['title']}">
+                  <img src="{:thumb($one['path'])}" alt="{$one['title']}">&nbsp;
+                </a>
+          </foreach>
+        </div>
+        <form class="search" action="/search/index">
+            <input name="skey" id="search"  class="span6" type="text" value="{$skey}" placeholder="搜索资源">
+            <input type="image" class="sicon" title="搜索" alt="搜索" src="__IMG__/search.png">
+            <div class="clear"></div>
+        </form>
+        <div class="span6 text-right" style="margin-left: 275px;">
+            <?php $tops = D('Search')->getTopSearchKeys(5); ?>
+            热搜词：<foreach name="tops" item="t">
+              <if condition="$t['skey']">
+                &nbsp;&nbsp;<a class="searchtop" title="热搜词：{$t['skey']}" href="/search/index?skey={$t['skey']}">{$t['skey']}</a>
+              </if>
+            </foreach>
+        </div>
+    </div>
+</div>
+<div class="top_nav">
+    <div class="container">
+        <category:menu level="2" />
+    </div>
+</div>

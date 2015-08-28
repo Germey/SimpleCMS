@@ -1,0 +1,24 @@
+<php>
+        $f = array('about','contact','copyright', 'disclaimer','agenda', 'mainowner', 'helpowner');
+        $bottom_menu = D('Category')->getCategoryById($f);
+</php>
+
+<div id="footer">
+    <div class="footer-nav container">
+        <foreach name="bottom_menu" item="one">
+            <a href="{$one['link']}" title="{$one['title']}">{$one['title']}</a>
+        </foreach>
+    </div>
+    <div class="footer-bg">
+        <div class="container">
+            <p>Copyright ©{:date('Y')} <a href="http://www.bnu1.org" target="_blank">北京师范大学中国公益研究院</a> 版权所有&nbsp;&nbsp;{:C('site_icp')}</p>
+            <p>
+                邮箱: <a mailto="{:C('site_contact_email')}">{:C('site_contact_email')}</a>&nbsp;&nbsp;
+                联系电话：{:C('site_contact_phone')}&nbsp;&nbsp;
+                技术支持：<a href="http://justering.com" target="_blank">佳信德润</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

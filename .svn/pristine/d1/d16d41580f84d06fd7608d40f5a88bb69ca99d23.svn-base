@@ -1,0 +1,83 @@
+<div id="content-index">
+    <include file="breadcrumb" />
+
+    <div class="content-header">
+        <div class="header-section">
+            <h4>系统配置</h4>
+        </div>
+    </div>
+
+    <div class="">
+        <!-- Block Tabs -->
+        <div class="block full">
+            <!-- Block Tabs Title -->
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <div class="btn-group">
+                        <a class="btn btn-alt btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
+                            <li>
+                                <a href="javascript:void(0)">Action</a>
+                                <a href="javascript:void(0)">Action 2</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:void(0)">Another Action</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" data-toggle="tabs">
+                    <li class="active"><a href="#base-setting" data-toggle="tab">系统配置</a></li>
+                    <li><a href="#example-tabs2-options" data-toggle="tab" title="Settings">核心配置</a></li>
+                    <li><a href="#example-tabs2-options" data-toggle="tab" title="Settings">扩展配置</a></li>
+                    <li><a href="#example-tabs2-profile" data-toggle="tab">Profile</a></li>
+                </ul>
+            </div>
+            <!-- END Block Tabs Title -->
+
+            <!-- Tabs Content -->
+            <div class="tab-content">
+                <div class="tab-pane active" id="base-setting">
+                    <div class="block no-border ">
+                        <!-- Normal Form Content -->
+                        <form action="page_forms_general.html" method="post" class="form-bordered" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="example-nf-email">网站名称</label>
+                                <input type="text" class="form-control input-5" value="{$}" >
+                                <span class="help-block">前台显示的标题</span>
+                            </div>
+                            <div class="form-group ">
+                                <label for="example-nf-email">网站描述</label>
+                                <textarea class="form-control input-5 textarea-default" ></textarea>
+                                <span class="help-block">用于在description里显示的网站描述</span>
+                            </div>
+                            <div class="form-group ">
+                                <label for="example-nf-email">网站关键词</label>
+                                <input type="text" class="form-control input-5" >
+                                <span class="help-block">前台显示的标题</span>
+                            </div>
+                            <div class="form-group ">
+                                <label for="example-nf-email">联系邮箱</label>
+                                <input type="text" class="form-control input-5" >
+                                <span class="help-block">联系邮箱</span>
+                            </div>
+                            <div class="form-group ">
+                                <label for="example-nf-email">网站配置</label>
+                                <input type="text" class="form-control input-5" >
+                                <span class="help-block">设置在网站底部显示的备案号，如“沪ICP备12007941号-2</span>
+                            </div>
+                            <div class="form-group form-actions">
+                                <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-user"></i> Login</button>
+                                <button type="reset" class="btn btn-sm btn-warning"><i class="fa fa-repeat"></i> Reset</button>
+                            </div>
+                        </form>
+                        <!-- END Normal Form Content -->
+                    </div>
+                </div>
+                <div class="tab-pane" id="example-tabs2-profile">Profile..</div>
+                <div class="tab-pane" id="example-tabs2-options">Settings..</div>
+            </div>
+            <!-- END Tabs Content -->
+        </div>
+        <!-- END Block Tabs -->
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+    <div class="col-md-12 block">
+        <div class="text-muted">
+            <h5>导入提示:</h5>
+            <div class="import_tips">
+                <ul>
+                <li>导入时，第一行为表头。</li>
+                    <li>导入只支持excel</li>
+                    <li>经纬度之间要用英文字符"-"隔开</li>
+                </ul>
+            </div>
+        </div>
+        <hr />
+        <form action="/manage/content/submit_import_excel/cid/{$category_id}" id="form" enctype="multipart/form-data" method="post" >
+            <input type="hidden" name="method" value="excel">
+            <input type="hidden" name="category_id" value="{$category_id}">
+
+            <h5>请选择要导入的 excel 文件</h5>
+            <input type="file" name="excel_file" id="excel_file">
+            <button class="btn btn-sm btn-success" style="margin-top: 10px;">确认导入</button>
+            <div class="clear"></div>
+        </form>
+    </div>
+    <div class="clearfix"></div>
+</div>

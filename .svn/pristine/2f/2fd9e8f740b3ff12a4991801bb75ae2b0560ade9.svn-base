@@ -1,0 +1,52 @@
+<div id="config-edit">
+    <include file="config/breadcrumb" />
+    <div class="block">
+        <if condition="$configs">
+          <form action="{:U('config/save')}" method="post" class="form-horizontal post_ajax_form">
+              <table class="table table-noborder">
+                <tr><th style="text-align:right">题目</th><th style="width:550px">内容</th><th>读取关键字<span class="text-danger">（不能为空，请勿重复）</span></th></tr>
+                  <foreach name="configs" item="one">
+                    <tr>
+                        <td class="item-label">{$one['title']}</td>
+                        <td>
+                            <if condition="$one['edit_type'] eq 'textarea'">
+                              <textarea name="value{$one['id']}" type="text" rows="5" class="pull-left form-control input-sm">{$one['value']}</textarea>
+                            <else />
+                              <input name="value{$one['id']}" type="text" class="pull-left form-control input-sm" value="{$one['value']}" />
+                            </if>
+                            <div class="clearfix"></div>
+                            <div class="text-muted">{$one['remark']}</div>
+                        </td>
+                        <td><input name="key{$one['id']}" type="text" class="pull-left form-control input-sm" style="width:150px;" value="{$one['key']}" />
+                        <if condition="$type eq 'custom'">
+                            &nbsp;&nbsp;<a href="{:U('Config/delete?id='.$one['id'])}" class="text-danger ajaxlink" ask="确定删除【{$one['title']}】配置？"><i class="hi hi-remove"></i>删除</a>
+                        </if>
+                        </td>
+                    </tr>
+                  </foreach>
+              </table>
+
+              <div class="form-group form-actions">
+                  <input type="hidden" name="type" value="{$type}" />
+                  <input type="hidden" name="config_ids" value="{:implode(',', get_column($configs))}" />
+                  <div class="col-md-9 col-md-offset-2">
+                      <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                  </div>
+              </div>
+          </form>
+        </if>
+
+        <br />
+        <if condition="$type eq 'custom'">
+          <p><a href="{:U('Config/render_new')}" class="btn btn-default ajaxlink"><i class="fa fa-plus"></i>增加配置项</a></p>
+        </if>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+
+  });
+
+</script>

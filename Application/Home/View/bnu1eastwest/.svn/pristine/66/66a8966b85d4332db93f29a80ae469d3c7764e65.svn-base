@@ -1,0 +1,208 @@
+<load file="__JS__/tab.js" />
+<load file="__STATIC__/jquery.jcarousel/jquery.jcarousel.min.js" />
+<load file="__STATIC__/jquery.jcarousel/skin.css" />
+
+<load file="__STATIC__/jquery.gallery/jquery.ad-gallery.js" />
+<load file="__STATIC__/jquery.gallery/jquery.ad-gallery.css" />
+
+
+<script type="text/javascript">
+  $(function(){
+  new $.Tab({
+    target: $('#js_banner_img li'),
+    effect: 'slide3d',
+    animateTime: 1000,
+    stay: 13500,
+    autoPlay: true,
+    merge: true,
+    prevBtn: $('#js_banner_pre'),
+    nextBtn: $('#js_banner_next')
+  });
+  $('.fx_banner').hover(function(){
+    $('.fx_banner_common').show();
+  },function(){
+    $('.fx_banner_common').hide();
+  })
+});
+</script>    
+<div class="main container">
+
+    <div class="content-box">
+        <div class="box-title">最新消息</div>
+        <div id="js_banner" class="fx_banner">
+          <ul  id="js_banner_img" class="fx_banner_img clear">
+            <article:lists name="one" category="45" row="5">
+              <li>
+                <div class="fx_banner_inner fx_grid_c1">
+                  <div class="child child0 main-img" data-z="1">
+                  <table>                  
+                        <tr>
+                            <td class="img"><a href="{$one['link']}" target="_blank"><img src="{:thumb($one['thumb'],500,300)}" alt="{$one['title']}"/></a></td>
+                            <td class="text">
+                                <h5><a href="{$one['link']}">{$one['title']}</a></h5>
+                                <div class="desc">{:get_short($one['summary'],480)}</div>
+                            </td>
+                        </tr>
+                  </table>
+                  </div>
+                </div>
+              </li>
+            </article:lists>
+          </ul>
+          <div class="fx_banner_common fx_grid_c1">
+            <a ytag="30000" id="js_banner_pre" href="javascript:;" class="fx_banner_pre"></a>
+            <a ytag="30010" id="js_banner_next" href="javascript:;" class="fx_banner_next"></a>
+          </div>
+        </div>
+        <div class="more"><a href="/category/45">查看更多</a></div>
+    </div>
+
+    <div class="content-box home_guests">
+        <div class="box-title">发言嘉宾</div>
+        <ul class="jcarousel-skin-tango">
+            <article:lists name="one" category="188" row="15">
+                <li>
+                    <p><a href="{$one['link']}" title="{$one['title']}"><img src="{:thumb($one['thumb'],170,130)}" /></a></p>
+                    <div><b>{$one['title']}</b></div>
+                    <div>{$one['subtitle']}</div>
+                </li>
+            </article:lists>
+        </ul>
+        <div class="clearfix"></div>
+        <div class="more"><a href="/category/188">查看更多</a></div>
+    </div>
+
+
+    <div class="content-box home_focus">
+        <div class="box-title">论坛聚焦</div>
+        <ul class="jcarousel-skin-tango">
+            <article:lists name="one" category="53" row="9">
+                <li>
+                    <p><a href="{$one['link']}" title="{$one['title']}"><img src="{:thumb($one['thumb'],290,200)}" /></a></p>
+                    <div style="margin-bottom:4px"><b>{$one['title']}</b></div>
+                    <div>{:get_short($one['summary'],120)}</div>
+                </li>
+            </article:lists>
+        </ul>
+        <div class="clearfix"></div>
+        <div class="more"><a href="/category/53">查看更多</a></div>
+    </div>
+
+    <table><tr>
+        <td style="width:380px;vertical-align: top;">
+            <div class="content-box video-box">
+                <div class="box-title">视 频</div>
+                <article:lists name="video" category="192" row="1" >
+                    <img src="{:thumb($video['thumb'],440,300)}" alt="{$video['title']}"/>
+                    <div data-toggle="modal" class="play" href="#video_model"></div>
+                    <div class="des">
+                        <h5>{$video['title']}</h5>
+                        <p>{:get_short($video['summary'],180)}</p>
+                    </div>
+                </article:lists>
+                <div class="more"><a href="/category/192">查看更多</a></div>
+            </div>
+        </td>
+        <td style="padding-left:20px;width:600px;vertical-align: top;">
+            <div class="content-box agenda-box">
+                <div class="box-title">论坛议程</div>
+                <?php $agenda = M('Category')->getByName('agenda-home');?>
+                <div class="des">
+                  {$agenda['content']}
+                </div>
+            </div>            
+        </td>
+    </tr></table>
+
+    <div class="content-box">
+      <div class="box-title">精彩瞬间</div>
+      <php> 
+        $images = D('Banner')->getBannerByName('jingcai'); 
+        $myheight = C('custom_jingcai_height');
+        if(!$myheight) $myheight = 600;
+      </php>
+      <div class="ad-gallery">
+        <div class="ad-image-wrapper" style="height:{$myheight}px">
+        </div> 
+        <div class="box-control">  
+          <div class="ad-controls"></div>
+          <div id="descriptions"></div>
+          <div class="clear"></div>
+        </div>
+        <div class="ad-nav">   
+          <div class="ad-thumbs">   
+            <ul class="ad-thumb-list">   
+              <foreach name="images" key= 'k' item = 'one'>
+                <li><a href="{$one['path']}">
+                    <img src="{:thumb($one['path'],120,80)}" class="image{$one['id']}" alt="{:nl2br($one['summary'])}" longdesc="{$one['link']}"/>   
+                  </a>
+                </li>
+              </foreach>
+            </ul>
+          </div>
+        </div> 
+      </div>
+    </div>
+
+
+    <div class="content-box">
+      <div class="box-title">主办机构</div>
+      <article:lists name="one" category="190" row="6">
+          <a href="/category/190" title="{$one['title']}" style="margin:0 40px"><img src="{$one['thumb']}" style="height:120px" /></a>
+      </article:lists>
+    </div>
+
+    <div class="content-box">
+      <div class="box-title" style="width:175px">2014资助发起机构</div>
+      <article:lists name="one" category="191" row="6">
+          <a href="/category/191" title="{$one['title']}" style="margin:0 40px"><img src="{$one['thumb']}" style="height:120px" /></a>
+      </article:lists>      
+    </div>
+
+</div>
+
+<script type="text/javascript"> 
+
+    jQuery(document).ready(function() {
+
+      $('.jcarousel-skin-tango').jcarousel({ auto: 4,
+        wrap: 'last',
+        initCallback: mycarousel_initCallback});
+      
+      function mycarousel_initCallback(carousel) {
+
+          carousel.buttonNext.bind('click', function() {
+              carousel.startAuto(0);
+          });
+
+          carousel.buttonPrev.bind('click', function() {
+              carousel.startAuto(0);
+          });
+
+          carousel.clip.hover(function() {
+              carousel.stopAuto();
+          }, function() {
+              carousel.startAuto();
+          });
+      };
+    });
+
+
+  $(function(){
+    $('.ad-gallery').adGallery({description_wrapper: $('#descriptions'),update_window_hash:false});
+    $('.ad-prev-image').hide();
+    $('.ad-next-image').hide();
+  });
+
+</script> 
+
+
+<div id="video_model" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 id="myModalLabel">{$video['title']}</h4>
+  </div>
+  <div class="modal-body" style="padding:0">
+    <embed src="{$video['video_url']}" quality="high" width="560" height="400" align="middle" allowScriptAccess="sameDomain" allowFullscreen="true" type="application/x-shockwave-flash"></embed></div>
+  </div>
+</div>

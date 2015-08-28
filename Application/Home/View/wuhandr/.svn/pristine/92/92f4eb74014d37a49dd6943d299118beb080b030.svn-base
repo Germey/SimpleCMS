@@ -1,0 +1,112 @@
+<div class="main container">
+
+  <?php 
+    $carousels = D('Banner')->getBannerByName('home_carousels');
+    $carousel_rights = D('Banner')->getBannerByName('home_carousel_right');
+  ?>
+  <table style="width: 100%">
+    <tr>
+      <td style="width:700px">
+        <div id="myCarousel" class="carousel slide">
+            <div class="carousel-inner">
+              <foreach name="carousels" item="one">
+              <div class="item <if condition="$key==0">active</if>">
+                  <div>
+                    <a <if condition="$one['link']">href="{$one['link']}"</if> target="_blank"><img src="{:thumb($one['path'],700, 360)}"></a>
+                    <if condition="$one['title'] OR $one['summary']">
+                      <div class="carousel-caption">
+                          <if condition="$one['title']">
+                            <h4>{$one['title']}</h4>
+                          </if>
+                          <p>{$one['summary'] ? get_short($one['summary'],240) : get_short(strip_tags($one['content']),240)}</p>
+                      </div>
+                    </if>
+                  </div>
+              </div>
+              </foreach>
+            </div>
+          <if condition="count($carousels)==1">
+          <else />
+            <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+            <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+          </if>
+        </div>
+      </td>
+      <td class="carousel_right">
+          <div class="block">
+            <img src="{$carousel_rights[0]['path']}" />
+            <div class="text-center">
+              <p class="slogan">{:nl2br($carousel_rights[1]['summary'])}<p>
+              <p><a target="_blank" href="{$carousel_rights[2]['link']}" class="btn btn-primary">{$carousel_rights[2]['title']}</a></p>
+            </div>
+          </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- home_style -->
+  <?php 
+    $home_style = C('custom_home_style');  
+    $home_style = 0;
+  ?>
+  <if condition="$home_style">
+    <br />
+    <?php $project_hints = D('Banner')->getBannerByName('project_hints'); ?>
+    <ul class="modules_tab">
+        <foreach name="project_hints" item="one"> 
+          <li <if condition="($key+1)%4==0">class="last"</if>>
+            <a href="{$one['link']}">
+              <div class="h">{$one['title']}</div>
+              <img title="{$one['title']}" alt="{$one['title']}" src="{:thumb($one['path'],220,130)}" />
+            </a>
+          </li>
+        </foreach>
+        <div class="clear"></div>
+    </ul>  
+  <else />
+    <?php 
+        $cats = array(45, 53); 
+    ?>
+    <foreach name="cats" item="cid">
+      <?php 
+        $cat = D("Category")->getById($cid);      
+        $child_ids = D("Category")->getChildrenId($cid);
+        $pages = D("Content")->getPagesByTypeId($child_ids,1,8);
+      ?>
+      <br />
+        <div class="box-title">
+          <a href="/category/{$cat['id']}" title="查看更多{$cat['title']}">{$cat['title']} | <span class="efont">{:ucfirst($cat['name'])}</span></a>
+          </div>
+      <ul class="simple">
+        <foreach name="pages" item="one">
+          <li><a href="/category/{$one['category_id']}"><b>[{$one['category_name']}]</b></a>&nbsp;<a href="{$one['link']}">{$one['title']}</a></li>
+        </foreach>
+      </ul>
+      <div class="clear"></div>
+    </foreach>
+    <div style="margin: 10px;"></div>
+    <?php 
+        $cats = array(188 => array('size'=>5, 'width'=>0, 'height'=>0), 
+                      231 => array('size'=>5, 'width'=>140, 'height'=>140),  ); 
+    ?>
+    <foreach name="cats" key="cid" item="attr">
+      <?php 
+        $cat = D("Category")->getById($cid);
+        $child_ids = D("Category")->getChildrenId($cid);
+        $pages = D("Content")->getPagesByTypeId($child_ids,1,$attr['size']);      
+      ?>
+      <br /><div class="box-title"><a href="/category/{$cat['name']}" title="查看更多{$cat['title']}">{$cat['title']} | <span class="efont">{:ucfirst($cat['name'])}</span></a></div>
+      <table style="width:100%"><tr>
+        <foreach name="pages" item="one">
+            <td style="vertical-align: middle; text-align: center; padding: 0 15px;">
+              <a target="_blank" href="{$one['link']}">
+                <p><img src="{:thumb($one['thumb'], $attr['width'], $attr['height'])}" alt="{$one['title']}" style="max-height: 180px;" /></p> 
+                <p>{:get_short($one['title'],16)}</p>
+              </a>
+            </td>
+        </foreach>
+      </tr></table>
+    </foreach>
+
+  </if>
+</div>

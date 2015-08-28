@@ -1,0 +1,13 @@
+<?php
+    $links = D('Banner')->getBannerByName('quick_links');
+?>
+<div class="list-box">
+    <div class="list-box-head">资源链接</div>
+    <ul class="simple">
+        <foreach name="links" item="one">
+            <li>
+                <a href="{$one['link']}" target="_blank">{$one['title']}</a>
+            </li>
+        </foreach>
+    </ul>
+</div>

@@ -1,0 +1,23 @@
+<div class="container detail" style="padding-top:20px;">
+    <include file="article/list_left" />
+    <div class="listright">
+        <div class="list-box">
+            <table><tr>
+              <td style="width:232px">
+                <img src="{:thumb($info['thumb'], 232, 175)}" />              
+              </td>
+              <td>
+                <div class="info-head"  style="padding-left:30px; padding-top:0">
+                    <h4 style="margin-top:0">{$info['title']}</h4>
+                    <div style="font-size:13px">{$info['subtitle']}</div>
+                    <hr />
+                </div>
+                <div class="info-content">
+                   {$info['content']}
+                </div>
+                
+              </td>
+            </tr></table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+<php></php>
+<form class="category_form" method="post" action="" class="form-horizontal post_ajax_form">
+    <table class="table table-striped" >
+            <thead>
+                <tr>
+                    <th>栏目名称</th>
+                    <th>所属类型</th>
+                    <th>菜单显示</th>
+                </tr>
+            </thead>
+            <tbody class="content-tbody">
+                <tr class="tr-content">
+                    <td><input class="form-control" name="title[]" style="width:150px;" /></td>
+                      <td>
+                        <select class="form-control" style="width:80px;" name="type[]">
+                            <foreach name="model_fields['type']['options']" item="one">
+                                <option value="{$key}">{$one}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td>
+                        <label class="switch switch-primary"><input class="is_menu" name="is_menu[]" type="checkbox" checked value=""><span></span></label>
+                    </td>
+                </tr>
+            </tbody>
+    </table>
+    <input type="hidden" name="pid" value="{$pid}" />
+</form>
+<button type="button" class="btn btn-sm btn-primary" id="add-tr"><i class="hi hi-plus"></i> 添加</button>
+<script type="text/javascript">
+    $('#add-tr').click(function(){
+        $('.tr-content').eq(0).clone().appendTo('.content-tbody');
+    })
+    $(function(){
+        $('.modal-footer .btn').click(function(){
+            var isMenu = $('.is_menu');
+            $.each(isMenu,function(i,v) {
+                $(this).val(i);
+            })
+            $('.category_form').attr('action','submit_batch_create').submit();
+        })
+    })
+</script>
+
+<include file="public/confirm_dialog_footer" />

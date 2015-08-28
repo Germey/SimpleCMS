@@ -1,0 +1,33 @@
+<div class="container" style="padding-top:20px;">
+
+    <include file="article/list_left" />
+
+    <div class="listright">
+        <div class="list-box">
+            <?php $title = $current_navbar['subtitle']?$current_navbar['subtitle']:$current_navbar['title']; ?>
+            <div class="list-box-head" style="width:{:strlen($title)*8}px">{$title}</div>
+            <article:lists name="news" category="$category['id']">
+                <div class="list-content">
+                    <dl class="dl-horizontal list-dl">
+                        <dt>
+                            <if condition="$news['source_link']">
+                                <a href="{$news['source_link']}" target="_blank"><img src="{$news['thumb']}" alt="{$new['title']}"></a>
+                            <else />
+                                <img src="{$news['thumb']}" alt="{$new['title']}">
+                            </if>
+                        </dt>
+                        <dd>
+                            <if condition="$news['source_link']">
+                                <a href="{$news['source_link']}" target="_blank"><h4>{$news['title']}</h4></a>
+                            <else />
+                                <h4>{$news['title']}</h4>
+                            </if>
+                        </dd>
+                        <dd style="color:#666;line-height:24px">{$news['content']}</dd>
+                    </dl>
+                </div>
+            </article:lists>
+            <div class="pagestring">{$pagestring}</div>
+        </div>
+    </div>
+</div><!-- / -->

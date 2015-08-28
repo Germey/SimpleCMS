@@ -1,0 +1,41 @@
+<?php
+namespace Home\Controller;
+
+class MessageController extends HomeController {
+
+   public function lists(){
+        $filter['status'] = '1';
+        $count = D('Message')->where($filter)->count();
+        list($pagesize, $page_num, $pagestring) = pagestring($count, 10);
+        $this->pagestring = $pagestring;
+        $this->messages = D('Message')->page($page_num, $pagesize)->where($filter)->order('id desc')->select();
+        $this->display();
+   }
+
+   public function create(){
+        $this->token = gen_password(microtime());
+        session('message_create_unique_token', $this->token);
+        $this->display();
+   }
+
+   public function save(){
+        $data = I('post.');
+        $token = I('post.token');
+        unset($data['token']);
+        $message_create_unique_token = session('message_create_unique_token');
+
+        if(!$token || !$message_create_unique_token || $token != $message_create_unique_token){
+            $this->error("留言失败, 请重新留言");
+        }
+
+        $data['create_time'] = date('Y-m-d H:i:s');
+        $data['ip'] = get_client_ip();
+        session('message_create_unique_token', null);
+        $msg_obj = D('Message');
+        if($msg_obj->create($data)){
+          $msg_obj->saveOrUpdate();
+        }
+        $this->success('恭喜您，留言成功');
+   }
+
+}

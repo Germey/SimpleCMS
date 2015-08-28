@@ -1,0 +1,338 @@
+<div id="content-index">
+    <include file="content/breadcrumb" />
+
+    <if condition="$category['type'] neq 3">
+        <div class="content-header">
+            <div class="header-section">
+                <form method="get" class="pull-left" style="margin-bottom: 10px">
+                    <input type="hidden" name="id" value="{$id}">
+                    <table><tr>
+                        <td>
+                            <div class="btn-group btn-group-sm btn-create-group">
+                                  <a href="{:U('Manage/content/edit?model_id='.$default_new_model_id.'&category_id='.$category_id)}" class="btn btn-primary">发布</a>
+                                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" role="menu">
+                                    <foreach name="models" item="one">
+                                        <if condition="in_array($one['id'], $available_model_ids)">
+                                            <li><a href="{:U('Manage/content/edit?model_id='.$key.'&category_id='.$category_id)}"><i class="{$one['icon_class']}"></i>{$one['name']}</a></li>
+                                        </if>
+                                    </foreach>
+                                  </ul>
+                            </div>
+                        </td>
+                        <td>
+                            <select class="form-control input-sm" name="smodel_id">
+                                <option value="0">-类型-</option>{:select_option($models, $smodel_id)}
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control input-sm" name="sstatus">
+                                <option value="0">-状态-</option>{:select_option($statuses, $sstatus)}
+                              </select>
+                        </td>
+                        <td>
+                            <select class="form-control input-sm" name="screate_user_id">
+                                <option value="0">-编辑-</option>{:select_option($seditors, $screate_user_id)}
+                              </select>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                              <input class="form-control input-sm" name="stitle" value="{$stitle}" placeholder="标题" />
+                              <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="submit">搜索</button>
+                                <a href="{:U('Content/index')}" class="btn btn-default btn-sm" title="重置"><i class="hi hi-repeat"></i></a>
+                                <!-- <button type="button" class="btn btn-default btn-sm" title="高级搜索"><i class="fa fa-chevron-right"></i></button> -->
+                              </span>
+                            </div>
+                        </td>
+                    </tr></table>
+                </form>
+                <a href="{:U('Content/index?sstatus=10')}" title="查看回收站" class="pull-right"><i class="hi hi-trash"></i></a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </if>
+
+    <div class="block">
+    <if condition="$list">
+        <form class="content_form" action="" method="post">
+            <?php 
+                $current_url = $_SERVER['REQUEST_URI'];
+                if(strpos($current_url, '?')>0) {
+                    $get_prefix = $current_url . '&';
+                } else {
+                    $get_prefix = $current_url . '?';
+                }
+            ?>
+            <table id="general-table" class="table table-vcenter table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:10px;padding:8px 2px"><input class="check-all-content" type="checkbox"></th>
+                        <th>标题
+                            <if condition="$category['children']">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" style="padding:0px 10px 0px 10px">
+                                      <i class="fa fa-sitemap"></i>
+                                      <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <foreach name="category['children']" item="cc">
+                                          <li><a href="{:U('Content/category?cid='.$cc['id'])}">{$cc['title']}</a></li>
+                                        </foreach>
+                                    </ul>
+                                </div>
+                            </if>
+                            <if condition="$id AND $content">
+                                <!--子文章详情页-->
+                                <?php 
+                                    $ref = $_SERVER['HTTP_REFERER'];
+                                    if(strpos($ref, '?')>0) {
+                                        $ref = $ref . '&focuspid='.$content['id'];
+                                    } else {
+                                        $ref = $ref . '?focuspid='.$content['id'];
+                                    }
+                                    
+                                ?>
+                                &nbsp;<a href="{$ref}"><span class="text-warning" title="点击返回">【<i class="fa fa-reply"></i>{$content['title']}】</span></a>
+                            </if>
+                        </th>
+                        <th style="width:120px">操作</th>
+                        <th style="width:74px">状态</th>
+                        <th style="width:60px">点击</th>
+                        <th style="width:64px">
+                            <a href="{:$get_prefix}order=weight">权重
+                                <if condition="$_GET['order'] eq 'weight'">
+                                     <i class="fa fa-chevron-down"></i>
+                                </if>
+                            </a>
+                        </th>
+                        <th style="width:70px">编辑</th>
+                        <th style="width:140px">
+                            <a href="{:$get_prefix}order=publish_time">发布时间
+                                <if condition="$_GET['order'] eq 'publish_time'">
+                                     <i class="fa fa-chevron-down"></i>
+                                </if>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php $hilight_id = session('highlight_id', NULL); ?>
+                    <foreach name="list" item="one">
+                        <?php 
+                            $one_content = $one; 
+                            $is_child = 0;
+                        ?>
+                        <include file="single_tr_line" />
+                        <if condition="$one['children']">
+                            <!--默认显示10个，其他的到更多去看去-->
+                            <foreach name="one['children']" item="child">
+                                <?php 
+                                    $one_content = $child; 
+                                    $is_child = 1;
+                                ?>
+                                <if condition="$key lt 10">
+                                    <include file="single_tr_line" />
+                                <else />
+                                    <tr style="display:none" class="child{:$one_content['parent_id']}">
+                                        <td></td>
+                                        <td colspan="8" style="padding-left: 54px;">
+                                            <a href="/manage/content?id={$one['id']}"><i class="fa fa-fighter-jet"></i>默认显示10条，点击查看全部 <i class="gi gi-more"></i></a>
+                                        </td>
+                                    </tr>
+                                    <?php break; ?>
+                                </if>
+                            </foreach>
+                        </if>
+                    </foreach>
+                </tbody>
+            </table>
+            <div>
+                <div class="pull-left" style="padding-top:15px;">
+                    <if condition="$sstatus neq 10">
+                        <a class="btn btn-info btn-xs move-btn ajaxlink" ><i class="fa fa-arrows"></i>移动</a>
+                        <a class="btn btn-info btn-xs ajaxlink" style="margin-left:10px;" id="export-btn"><i class="hi hi-export"></i>导出</a>
+                        <a class="btn btn-info btn-xs ajaxlink" style="margin-left:10px;" id="import-btn" href="javascript::void(0)"><i class="hi hi-import"></i>导入</a>
+                        <a class="btn btn-info btn-xs copy-btn ajaxlink" style="margin-left:10px;"><i class="fa fa-files-o"></i>复制</a>
+                        <a class="btn btn-info btn-xs delete-much-btn ajaxlink" href="javascript:;"  style="margin-left:10px;"><i class="hi hi-remove"></i>删除</a>
+                        <a class="btn btn-info btn-xs update-status  ajaxlink" href="javascript:;"  style="margin-left:10px;"><i class="hi hi-ok"></i>发布</a>
+                    <else/>
+                        <a class="btn btn-info btn-xs thorough-delete-btn ajaxlink" ><i class="hi hi-remove"></i>彻底删除</a>
+                        <a class="btn btn-info btn-xs recycle-btn ajaxlink" ><i class="gi gi-restart"></i>还原</a>
+                    </if>
+                </div>
+                <div class="pull-right">
+                    {$_page}
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <if condition="$category['remark']">
+                <div class="alert alert-warning">栏目备注：</i>{$category['remark']}</div>
+            </if>
+        </form>
+    <else />
+        <if condition="$category['type'] eq 3 AND $category['extralink']">
+            <a target="_blank" href="{$category['extralink']}">
+                <i class="gi gi-link icon-fix"></i>
+                该栏目为外部链接，点击查看：{$category['extralink']}
+            </a>
+        <else />
+            <h5>该栏目没有内容，请点击上面“发布”创建</h5>
+        </if>
+    </if>
+    </div>
+</div>
+<script type="text/javascript">
+    var allCheck = $('tbody input[type="checkbox"]');
+    $('.check-all-content').click(function(){
+        var checkStatus = $(this).prop('checked');
+        if(checkStatus) {
+            allCheck.prop('checked',true);
+        }else {
+            allCheck.prop('checked',false);
+        }
+    })
+
+    $('.delete-much-btn').click(function(){
+        
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+        if(confirm('确认要删除吗？')) {
+            $('.content_form').prop('action','/manage/content/batch_delete').submit();
+        }
+    })
+
+    $('.thorough-delete-btn').click(function(){
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+        if(confirm('确认要彻底删除吗？删除后不可恢复')) {
+            $('.content_form').prop('action','/manage/content/batch_delete').submit();
+        }
+    })
+
+    $('.copy-btn').click(function(){
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+        var chooseBox = [];
+        $.each(allCheck,function(i,v) {
+            if($(this).prop('checked')==true) {
+                chooseBox.push($(this).val());
+            }
+        })
+        var stringIds = chooseBox.join('-');
+        $(this).attr('href','/Manage/Content/render_copy?id='+stringIds);
+    })
+
+    
+
+     $('.update-status').click(function(){
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+        var chooseBox = [];
+        $.each(allCheck,function(i,v) {
+            if($(this).prop('checked')==true) {
+                chooseBox.push($(this).val());
+            }
+        })
+        var stringIds = chooseBox.join('-');
+        location.href = '/Manage/Content/batch_publish?ids='+stringIds;
+    })
+
+    $('#export-btn').click(function(){
+
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+
+        var category_id = parseInt({$category_id});
+        if(!category_id) {
+            alert('请选择在某个栏目下进行导出');
+            return;
+        }
+
+        var chooseBox = [];
+        $.each(allCheck,function(i,v) {
+            if($(this).prop('checked')==true) {
+                chooseBox.push($(this).val());
+            }
+        })
+        var stringIds = chooseBox.join('-');
+        location.href='/Manage/Content/export_content?category_id={$category_id}&ids='+stringIds;
+    })
+
+    $('#import-btn').click(function(){
+        var category_id = parseInt({$category_id});
+        if(!category_id) {
+            alert('请选择在某个栏目下进行导入');
+            return;
+        }
+        location.href='/Manage/Content/import_content/cid/{$category_id}';
+    })
+
+
+    $('.move-btn').click(function(){
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+        var chooseBox = [];
+        $.each(allCheck,function(i,v) {
+            if($(this).prop('checked')==true) {
+                chooseBox.push($(this).val());
+            }
+        })
+        var stringIds = chooseBox.join('-');
+        $(this).attr('href','/Manage/Content/render_move_content?ids='+stringIds);
+    })
+
+    $('.recycle-btn').click(function(){
+        if(!checkCheckbox()) {
+            alert('请最少选择一个');
+            return;
+        }
+
+        if(confirm('确认要还原吗？')) {
+            var chooseBox = [];
+            $.each(allCheck,function(i,v) {
+                if($(this).prop('checked')==true) {
+                    chooseBox.push($(this).val());
+                }
+            })
+            var stringIds = chooseBox.join('-');
+            $(this).attr('href','/Manage/Content/recycle?ids='+stringIds);
+        }
+    })
+
+    function checkCheckbox() {
+        var num = 0;
+        $.each(allCheck,function(i,v) {
+            if($(this).prop('checked') == true) {
+                num+=1;
+            }
+        })
+        if(num) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    $(document).ready(function() {
+        var focuspid = parseInt({$Think.get.focuspid});
+        if(focuspid) {
+            $('.child'+focuspid).toggle();
+        }
+    });
+</script>

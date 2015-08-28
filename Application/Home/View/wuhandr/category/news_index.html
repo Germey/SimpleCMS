@@ -1,0 +1,51 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <include file="public/breadcrumb" />
+    <div class="listleft">
+        <include file="public/category_tags" />
+        <table class="table table-striped">           
+            <article:lists name="one" category="$category['id']" ispage="true"  tag_id="$_GET['stid']" row="10">
+                <tr>
+                    <td style="width:200px">
+                        <a target="_blank" href="{$one['link']}">
+                            <img src="{:thumb($one['thumb'],190,0)}" style="width:190px;">
+                        </a>
+                    </td>
+                    <td>
+                        <h5>
+                            <if condition="$one['category_id'] neq $category['id']">
+                                【<a href="/category/{$one['category_id']}">{$one['category_name']}</a>】
+                            </if>
+                            <a href="{$one['link']}">{$one['title']}</a>
+                        </h5>
+                        <p>
+                            {:substr($one['publish_time'],0,10)}&nbsp;&nbsp;
+                            <if condition="$one['tags']">
+                                <b>标签：</b>
+                                <foreach name="one['tags']" item="t">
+                                    <a style="color: #3a87ad" href="/category/{$category['id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                                </foreach>
+                            </if>
+                        </p>
+                        
+                        <p class="summary">
+                            <p style="color:#666">{$one['summary']?nl2br($one['summary']):get_short(strip_tags($one['content']),200)}</p>
+                        </p>
+
+                        <div class="more"><a href="{$one['link']}">查看详情 ››</a></div>
+                    </td>
+                </tr>
+            </article:lists>
+
+        </table>
+        <div class="pagestring">{$pagestring}</div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="listright">
+        <include file="category/related_category" />
+        <include file="public/side_ads" />
+    </div>
+
+</div>

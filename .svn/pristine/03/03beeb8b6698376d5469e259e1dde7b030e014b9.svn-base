@@ -1,0 +1,7 @@
+
+<div class="box-mask">
+    <div class="modal-header">
+        <a class="close" onclick="return X.boxClose();">×</a>
+        <h4>{$title}</h4>
+    </div>
+    <div class="modal-body">

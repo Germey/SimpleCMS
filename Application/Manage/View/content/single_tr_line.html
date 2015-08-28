@@ -1,0 +1,53 @@
+<tr
+        <if condition="$is_child eq 1">
+            style="display:none" 
+            class="child{:$one_content['parent_id']}"
+        <elseif condition="$hilight_id==$one_content['id']"/>
+            class="success"
+        </if>
+    >
+    <td style="padding:8px 2px"><input type="checkbox" id="checkbox-{$one_content['id']}" name="checkbox[]" value="{$one_content['id']}"></td>
+    <td {$is_child==1?'class="child-indent"':''}>
+        <i title="{$one_content['model']['name']}" class="{$one_content['model']['icon_class']}"></i>
+        <if condition="$category_id neq $one_content['category_id']">
+            <a href="{:U('Content/category?cid='.$one_content['category_id'])}">[{$one_content['category_name']}]</a>&nbsp;
+        </if>
+        <a href="{:U('Content/edit?id='.$one_content['id'])}">{$one_content['title']}</a>
+        <if condition="$one_content['thumb']">
+            <a href="{$one_content['thumb']}" data-toggle="lightbox-image">
+                <i class="fa fa-picture-o text-warning"></i>
+            </a>
+        </if>
+        <if condition="$one_content['children']">
+            <a href="javascript:void(0)" onclick="$('.child'+{$one_content['id']}).toggle()">
+                <i class="fa fa-list text-warning" title="点击展开子文章">&nbsp;({:count($one_content['children'])})</i>
+            </a>
+        </if>
+    </td>
+    <td nowrap>
+        <div class="btn-group btn-group-xs">
+            <a href="<if condition='$one_content[template] eq "category" '>/category/{$one_content['category']['id']}#{$one_content['id']} <else/>{$one_content['link']}</if>" target="_blank" title="网站前台访问" class="btn btn-default"><i class="hi hi-link"></i></a>
+            <a href="{:U('Content/edit?id='.$one_content['id'])}" title="编辑" class="btn btn-default"><i class="hi hi-pencil"></i></a>
+            <a href="{:U('Content/render_copy?id='.$one_content['id'])}" title="复制" class="btn btn-default ajaxlink"><i class="fa fa-files-o"></i></a>                                
+            <a href="{:U('Content/delete?id='.$one_content['id'])}" title="删除"class="btn btn-default ajaxlink" 
+                ask="{$one_content['status']<10?'确定删除么？删除后内容在回收站中，还可以恢复。':'确认要彻底删除该内容？'}">
+                <i class="{$one_content['status']<10?'hi hi-trash':'hi hi-remove'}"></i>
+            </a>
+        </div>
+    </td>
+    <td nowrap>
+        {$one_content['status_name']}&nbsp;
+        <if condition="$one_content['status_action']">
+            <a  href="{$one_content['status_action']['link']}?id={$one_content['id']}" 
+                ask="{$one_content['status_action']['ask']}" 
+                title="{$one_content['status_action']['title']}" class="ajaxlink">
+                <i class="{$one_content['status_action']['icon']}"></i>
+            </a>
+        </if>
+
+    </td>
+    <td>{$one_content['pv']}</td>
+    <td>{$one_content['weight']}</td>
+    <td><a href="/Manage/user/index?susername={$one_content['create_user']['username']}" target="_blank">{$one_content['create_user']['username']}</a></td>
+    <td>{$one_content['publish_time'] > 1?substr($one_content['publish_time'],0,16):'-'}</td>
+</tr>

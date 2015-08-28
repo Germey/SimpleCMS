@@ -1,0 +1,26 @@
+<include file="public:html_header" />
+    <div class="top">
+        <div class="head_bg">
+            <div class="container" style="position:relative">
+                <a class="logo" href="/"><img src="__IMG__/logo.png" alt="{:C('site_title')}"/></a>
+                <div class="pull-right quicklink">
+                    <p><a href="/category/about">关于论坛</a></p>
+                    <p><a href="/category/contact">联系我们</a></p>
+                    <p><a href="/category/english">English</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="top_nav">
+            <div class="container">
+                <div class="pull-left"><category:menu level="1" /></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // make the last nav without margin-right
+        jQuery(document).ready(function() {
+            $('.top_nav .pull-left ul li:last-child').css({"margin-right":0});
+        });
+    </script>
+ 

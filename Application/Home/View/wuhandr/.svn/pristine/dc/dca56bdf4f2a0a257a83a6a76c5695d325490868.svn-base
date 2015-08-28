@@ -1,0 +1,49 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <include file="public/breadcrumb" />
+    <div class="listleft">
+        <include file="public/category_tags" />
+        <ul class="newsblock">
+            <article:lists name="one" category="$category['id']" ispage="true"  tag_id="$_GET['stid']" row="10">
+                <if condition="!$key++">
+                    <li class="firstline">
+                        <div class="l">
+                            <a href="{$one['link']}"><img src="{:thumb($one['thumb'],358,240)}" /></a></div>
+                        <div class="r">
+                            <p class="date">{:str_replace('-', ' / ', substr($one['publish_time'],5,5)) }</p>
+                            <h5><a href="{$one['link']}">{$one['title']}</a></h5>
+                            <p class="summary">{$one['summary']?get_short($one['summary'], 150):get_short(strip_tags($one['content']),150)}</p>
+                            <if condition="$one['tags']">
+                                <b>标签：</b>
+                                <foreach name="one['tags']" item="t">
+                                    <a style="color: #FFF" href="/category/{$category['id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                                </foreach>
+                            </if>
+                        </div>
+                    </li>
+                <else />
+                    <li class="twocolumn" <if condition="($key+1)%2 eq 0">style="margin-right:0"</if> onclick="location='{$one['link']}'">
+                        <p class="date">{:str_replace('-', ' / ', substr($one['publish_time'],5,5)) }</p>
+                        <h5><a href="{$one['link']}">{$one['title']}</a></h5>
+                        <p class="summary">{$one['summary']?get_short($one['summary'], 130):get_short(strip_tags($one['content']),130)}</p>
+                        <if condition="$one['tags']">
+                            <b>标签：</b>
+                            <foreach name="one['tags']" item="t">
+                                <a href="/category/{$category['id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                            </foreach>
+                        </if>                        
+                    </li>
+                </if>
+            </article:lists>
+        </ul>
+        <div class="pagestring">{$pagestring}</div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="listright">
+        <include file="category/related_category" />
+        <include file="public/side_ads" />
+    </div>
+
+</div>

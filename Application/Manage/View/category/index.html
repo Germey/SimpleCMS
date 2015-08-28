@@ -1,0 +1,152 @@
+<div id="category-edit">
+    <include file="category/breadcrumb" />
+
+    <div class="content-header">
+        <div class="header-section btn-group btn-group-sm btn-create-group">
+            <a href="/Manage/category/create" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> 新建栏目</a>
+            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" style="width:110px;">
+                <li><a  href="/Manage/category/create"><i class="fa fa-plus" ></i>新建栏目</a></li>
+                <li><a class="ajaxlink" href="{:U('batch_create_category_dialog')}"><i class="hi hi-plus-sign"></i>批量新建栏目</a></li>
+            </ul>
+        </div>
+        <a class="btn btn-link dropdown-toggle ajaxlink pull-right" style="margin:15px 25px 0 0" href="{:U('Category/clear_cache')}" title="修改完栏目但前台展示有误，可点击清除"><i class="hi hi-refresh"></i>清除栏目缓存</a>
+    </div>
+    <div class="block">
+        <div class="form-group">
+            <div class="col-md-2" style="padding-left:0">
+                <div class="category-select" style="position: ;">{:content_category_select($tree, '',0, $category_id,true)}</div>
+            </div>
+            <div class="col-md-10">
+                <if condition="$category['id']">
+                    <div class="pull-right ">
+                        <if condition="!$category['parent']['parent']">
+                            <div class="btn-group btn-group-xs btn-create-group" style="inline-block">
+                                <a href="{:U('Category/create?pid='.$category['id'])}" class="btn btn-xs btn-primary"><i class="hi hi-plus"></i>创建子栏目</a>
+                                <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" style="width:110px;">
+                                    <li><a  href="{:U('Category/create?pid='.$category['id'])}"><i class="fa fa-plus" ></i>新建子栏目</a></li>
+                                    <li><a class="ajaxlink" href="{:U('batch_create_category_dialog?pid='.$category['id'])}"><i class="hi hi-plus-sign"></i>批量新建子栏目</a></li>
+                                </ul>
+                            </div>
+                        </if>
+                        <if condition="$category_content_count">
+                            <a href="#" class="btn btn-xs btn-danger" onclick="display_noty('清空栏目内容（包括回收站）后才能删除栏目')">
+                                <i class="hi hi-remove"></i>删除当前栏目({$category_content_count})
+                            </a>
+                        <else />
+                            <a href="{:U('Category/delete?id='.$category['id'])}" class="btn btn-xs btn-danger ajaxlink" ask="栏目中没有内容了，你可以删除，删除栏目将同时删除其子栏目，确定要删除该栏目？"><i class="hi hi-remove"></i>删除当前栏目</a>
+                        </if>
+                        <a href="{:U('Content/index?cid='.$category['id'])}" target="_blank" class="btn btn-xs"><i class="hi hi-share-alt"></i>查看栏目内容</a>
+                    </div>
+                </if>
+                <form action="{:U('category/save')}" method="post" class="form-horizontal post_ajax_form">
+                    <table class="table table-noborder">
+                        <foreach name="model_fields" item="field">
+                            <switch name="key">
+                              <case value="models|children_models">
+                                <tr id="tr{$key}">
+                                    <td class="item-label">{$field.title}</td>
+                                    <td>
+                                        <include file="category/model_selector" />
+                                    </td>
+                                </tr>
+                              </case>
+                              <default />
+                                {:form_block($key, $field, $category[$key])}
+                            </switch>
+                        </foreach>
+                    </table>
+                    
+                    <div class="form-group form-actions">
+                        <input type="hidden" name="id" value="{$category['id']}">
+                        <input type="hidden" name="pid" value="{$pid}">
+                        <div class="col-md-9 col-md-offset-2">
+                            <button type="submit" class="btn btn-sm btn-success" data-loading-text="保存中..."><i class="hi hi-ok"></i>保存</button>
+                        </div>
+                    </div>
+                </form> 
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // TODO to be optimized
+    var trSingle = $("tr").not("#trparent_title,#trtitle,#trname,#trtype,#trtemplate_single,#trcontent,#trsort,#tris_menu,#trlink,#trthumb,#trbanner");
+    var trExtralink = $('#trparent_title,#trtitle,#trname,#trtype,#trextralink,#trsort,#tris_menu,#trthumb,#trbanner');
+    <if condition="$category['type'] eq 4">
+        trSingle.hide();
+    <elseif condition="$category['type'] eq 3" />
+        $('tr').hide();
+        trExtralink.show();
+    <else />
+        $('#trtemplate_single,#trextralink').hide();
+    </if>
+
+    <if condition="$category['enable_children']">
+        $("#trchildren_models").show();
+    <else />
+        $("#trchildren_models").hide();
+    </if>
+
+    $(document).ready(function() {
+        var type = $('.type_select').eq(0);
+        type.change(function() {
+            if($(this).val()==4) {
+                $("tr").show();
+                trSingle.hide();
+            }else if($(this).val() ==3){
+                $('tr').hide();
+                trExtralink.show();
+            }else {
+                $('tr').show();
+                $('#trtemplate_single,#trextralink,#trsubtitle').hide();
+            }
+        });
+
+
+        $('input:radio[name="enable_children"]').click(function() {
+            var res = parseInt($(this).val());
+            if(res==1) {
+                $("#trchildren_models").show();
+            } else {
+                $("#trchildren_models").hide();
+            }
+        });
+
+        // 默认全是开着的，enable当前的，或者没有当前的，默认显示第一个
+        // $(".category-select div").each(function(){
+        //     if($(this).attr('pid') == 0) {
+        //         toggle_subcategory($(this).attr('id'));
+        //     }
+        // });
+    });
+
+    function select_category(cid) {
+         var href = "{:U('Category/index')}";
+         window.location.href = href + '?id=' + cid;
+    }
+
+    // 折叠窗口，还没做完...
+    // function toggle_subcategory(cid) {
+    //     $(".category-select div").each(function(){
+    //         if($(this).attr('pid') == cid) {
+    //             $(this).toggle();
+
+    //             //递归Toggle
+    //             toggle_subcategory($(this).attr('id'));
+    //         }
+    //     });
+    // }
+
+    <if condition="$category['subtitle']">
+        $('#trsubtitle').show();
+    </if>
+
+</script>

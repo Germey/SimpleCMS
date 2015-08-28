@@ -1,0 +1,22 @@
+<?php
+    $bread = D('Category')->getParents($category['id']);
+    $bread = array_reverse($bread);    
+    if($info['parent_id']) {
+        $bread[] = array('title'=>$info['parent']['title'], 'link'=>$info['parent']['link']);
+    }
+    if($info) {
+        $bread[] = array('title'=>'正文');
+    }
+    $br_count = count($bread);
+?>
+
+<ul class="breadcrumb">
+    <li><a href="/">首页</a><span class="divider">/</span></li>
+    <foreach name="bread" item="one" key = 'k'>
+        <if condition= "$k eq $br_count-1">
+            <li class="active">{$one['title']}</li>
+        <else/>
+            <li><a href="{$one['link']}">{$one['title']}</a><span class="divider">/</span></li>
+        </if>
+    </foreach>
+</ul>

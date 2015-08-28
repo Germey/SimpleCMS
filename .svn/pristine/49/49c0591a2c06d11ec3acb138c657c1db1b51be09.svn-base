@@ -1,0 +1,163 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+<php>
+    $type_option = OptionArray(D('User')->managerRole(),'type','name');
+    $role_selected = $user ? $user['role'] : $manager_role;
+</php>
+
+<form method="post" action="{:U('user/submit_edit')}" class="form-horizontal post_ajax_form">
+    <table class="table table-noborder">
+        <tr>
+            <td class="item-label">类型</td>
+            <td>
+                <select class="form-control input-sm span2 type_choose" name="manager_role">
+                    {:select_option($type_option,$role_selected)}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="item-label">用户名</td>
+            <td>
+                <input type="text" value="{$user['username']}" name="username" class="form-control input-sm"  placeholder="请输入用户名" >
+            </td>
+        </tr>
+        <if condition="!$user">
+            <tr>
+                <td class="item-label">密码</td>
+                <td>
+                    <input type="text" value="" name="password" class="form-control input-sm"  placeholder="请输入密码" >
+                </td>
+            </tr>
+        </if>
+        <tr>
+            <td class="item-label">邮箱</td>
+            <td>
+                <input type="text" value="{$user['email']}" name="email" class="form-control input-sm" placeholder="请输入邮箱">
+            </td>
+        </tr>
+        <tr>
+            <td class="item-label">栏目权限</td>
+            <td>
+                <div class="manage-display text-success" style="padding-top:6px;">全部栏目</div>
+                <div class="edit-display">
+                    <div class="list-cid">
+                        <foreach name="user['category_display']" item="one">
+                            <span cid='{$key}'>{$one}</span>
+                        </foreach>
+                    </div>
+                    <div style="position:relative;">
+                        <div class="choose_category" >选择栏目<i style="float:right;margin-top:2px;" class="fa fa-caret-down"></i></div>
+                        <div class="category-select" style="display:none;">{:content_category_select($category, '',0, $category_id)}</div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="id" value="{$user_id}" />
+    <input id="cids" type="hidden" name="cids" value="<if condition="$user[category_ids]">{:implode(',',$user[category_ids])}</if>" />
+</form>
+
+<include file="public/confirm_dialog_footer" />
+<script type="text/javascript">
+    <if condition="$user['role'] eq 'manager' || $manager_role eq 'manager' ">
+        $('.edit-display').hide();
+    <else />
+        $('.manage-display').hide();
+    </if>
+    $('.type_choose').change(function(){
+        if($(this).val() == 'manager') {
+            $('.manage-display').show();
+            $('.edit-display').hide();
+        }else {
+            $('.edit-display').show();
+            $('.manage-display').hide();
+        }
+    });
+
+    $('.choose_category').click(function(event){
+        if($('.category-select').css('display') == 'none'){
+            $('.category-select').show();
+        }else {
+            $('.category-select').hide();
+        }
+        event.stopPropagation()
+    })
+
+    function select_category(id,name) {
+        // var self =$('#'+id);
+        // alert(self.html())
+    }
+
+    //下面是选择时候的js
+    topArr = [];
+    var listSpan = $('.list-cid span');
+    $.each(listSpan,function(i,v){
+        topArr.push($(this).attr('cid'));
+    })
+
+    $.each($('.category-select div'),function(i,v){
+        if($.inArray($(this).attr('id'),topArr) != -1) {
+            $(this).addClass('active');
+        }
+    })
+    //批量选择或取消，如果有子栏目就一直往下找，找到最低级的子栏目都选上或取消
+    $('.category-select div').click(function(){
+        var self = $(this);
+        var selfId  = self.attr('id');
+        var selfPid = self.attr('pid');
+        var arrBox = [];
+        var child = $(".category-select div[pid="+selfId+"]");
+  
+        if(child.length) {
+                $.each(child,function(i,v){
+                    var childId = $(this).attr('id');
+                    var childPid = $(this).attr('pid');
+                    var grand = $(".category-select div[pid="+childId+"]");
+                    if(grand.length) {
+                        $.each(grand,function(i,v) {
+                            arrBox.push($(this).attr('id'));
+                        })
+                    }else {
+                        arrBox.push($(this).attr('id'));
+                    }
+                })
+            }else {
+                arrBox.push($(this).attr('id'));
+        }
+
+        // alert(arrBox)
+        var status = false;
+        $.each(arrBox,function(i,v){
+            if(!$('.category-select div[id='+v+']').hasClass('active')) {
+                status =true;
+            }
+            return;
+        })
+
+        if(status) {
+            $.each(arrBox,function(i,v){
+                var one = $('.category-select div[id='+v+']');
+                one.addClass('active');
+                if($.inArray(v,topArr) == -1){
+                    topArr.push(v);
+                }
+            })
+        }else {
+            $.each(arrBox,function(i,v){
+                var one = $('.category-select div[id='+v+']');
+                one.removeClass('active');
+                topArr.splice($.inArray(v,topArr),1);
+            })
+        }
+        
+        var list = '';
+        $.each(topArr,function(i,v) {
+            list+= "<span cid='"+v+"'>"+$('.category-select div[id='+v+']').text()+"</span>";
+        })
+        $('.list-cid').html(list);
+
+        var ids = topArr.join(','); 
+        $('#cids').val(ids);
+    })
+
+</script>

@@ -1,0 +1,64 @@
+<include file="public/category_head" />
+
+<div class="container detail">
+    <div class="listleft">
+        <include file="public/breadcrumb" />
+
+        <div class="main-content">
+            <div class="info-head text-center">
+                <h4>{$info['title']}</h4>
+            </div>
+            <div class="source-box">
+              <if condition="$info['source_name']">
+                 <a href="{$info['source_link']}" target="_blank">{$info['source_name']}</a>
+              </if>
+              <if condition="$info['author_name']">
+                 &nbsp;&nbsp;{$info['author_name']}
+              </if>
+               &nbsp;&nbsp;<span class="muted">{:substr($info['publish_time'],0,16)}</span>&nbsp;&nbsp;
+              <if condition="$info['tags']">
+                  <span class="pull-right"><b>标签：</b>
+                    <foreach name="info['tags']" item="t">
+                        <a href="/category/{$category['id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                    </foreach>
+                  </span>
+              </if>
+            </div>
+            <if condition="$info['summary']">
+                <div class="alert alert-success">
+                    {:nl2br($info['summary'])}
+                </div>
+            </if>
+            <div class="info-content">
+                {$info['content']}
+            </div>
+            <div style="margin-top:20px">
+              <!-- JiaThis Button BEGIN -->
+              <div class="jiathis_style_32x32">
+                <a class="jiathis_button_qzone"></a>
+                <a class="jiathis_button_tsina"></a>
+                <a class="jiathis_button_tqq"></a>
+                <a class="jiathis_button_weixin"></a>
+                <a class="jiathis_button_renren"></a>
+                <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+                <a class="jiathis_counter_style"></a>
+              </div>
+              <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+              <!-- JiaThis Button END -->
+            </div>
+        </div>
+    </div>
+
+    <div class="listright">
+        <div class="list-box">
+            <div class="list-box-head">相关文章</div>
+            <ul class="simple">            
+              <article:lists name="one" category="$category['id']" ispage="false" row="6">
+                  <li><a href="{$one['link']}">{:get_short($one['title'],28)}</a></li>
+              </article:lists>
+            </ul>
+        </div>
+
+        <include file="public/side_ads" />
+    </div>
+</div>

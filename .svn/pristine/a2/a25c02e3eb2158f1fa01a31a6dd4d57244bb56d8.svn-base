@@ -1,0 +1,14 @@
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:void(0)" onclick="box_submit_form();" class="btn btn-sm btn-primary">
+            <i class="fa fa-angle-right"></i>
+            <empty name="confirm_button_display">提交<else />{$confirm_button_display}</empty>
+        </a>
+        <a style="margin-left:5px" href="#" onclick="return X.boxClose();">取消</a>
+    </div>
+</div>
+<script type="text/javascript">
+    function box_submit_form(){
+        $(".modal-body form:first").submit();
+    }
+</script>

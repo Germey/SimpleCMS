@@ -1,0 +1,15 @@
+<div class="container detail" style="padding-top:20px;">
+    <include file="article/list_left" />
+    <div class="listright">
+        <div class="list-box">
+            <div class="info-head text-center" style="padding:10px 0">
+                <h4>{$category['title']}</h4>
+            </div>
+            <div class="info-content">
+                <div class="single">
+                    {$category['content']}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

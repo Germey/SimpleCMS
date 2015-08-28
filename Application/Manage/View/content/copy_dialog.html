@@ -1,0 +1,43 @@
+{__NOLAYOUT__}
+<include file="public/confirm_dialog_header" />
+
+<form method="post" action="{:U('content/submit_copy')}" class="form-horizontal post_ajax_form">
+    <input type="text" id="to_category_names" class="form-control input-sm" placeholder="请选择" value="" readonly="readonly" style="cursor: pointer;"/>
+    <div id="category-select-wrapper">
+      <input type="hidden" name="to_category_ids" id="to_category_ids" value="" />
+      <div class="category-select">{:content_category_select($category_tree, '',0, $category_id)}</div>
+    </div>
+    <input type="hidden" name="content_id" value="{$content_id}" />
+</form>
+<script type="text/javascript">
+    $('#to_category_names').click(function(e){
+        $("#category-select-wrapper").toggle();
+    });
+
+    // 初始化已经选择的
+    var category_map = new Map();
+
+    show_select_category();
+
+    function select_category(category_id, category_name) {
+        if(category_map.containsKey(category_id)) {
+            category_map.remove(category_id);
+            $("#"+category_id).removeClass('select');
+        } else {
+            category_map.put(category_id, category_name);
+            $("#"+category_id).addClass('select');
+        }
+        show_select_category();
+    }
+
+    function show_select_category() {
+        var ids = category_map.keys();
+        var names = category_map.values();
+
+        $("#to_category_ids").val(ids.join(','));
+        $("#to_category_names").val(names.join(' '));
+    }
+
+</script>
+
+<include file="public/confirm_dialog_footer" />

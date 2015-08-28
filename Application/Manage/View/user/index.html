@@ -1,0 +1,88 @@
+<div id="content-index">
+    <div class="content-header">
+        <div class="header-section">
+            <form method="get">
+                <table>
+                    <tr>
+                        <td>
+                            <div class="btn-group btn-group-sm btn-create-group">
+                                  <a href="{:U('render_edit?manager_role=editor')}" class="btn btn-primary ajaxlink">新增</a>
+                                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" role="menu" style="width:110px;">
+                                    <foreach name="manager_role" item="one" key='k'>
+                                        <li><a class="ajaxlink" href="{:U('render_edit?manager_role='.$one[type])}"><i class="{$one['icon_class']}" ></i>{$one['name']}</a></li>
+                                    </foreach>
+                                  </ul>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                              <input class="form-control input-sm" name="susername" value="{$susername}" placeholder="用户名" />
+                              <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="submit">搜索</button>
+                              </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <div class="block">
+        <table id="general-table" class="table table-striped table-vcenter table-hover">
+            <thead>
+                <tr>
+                    <!-- <th style="width:10px;padding:8px 2px"><input type="checkbox"></th> -->
+                    <th>用户名</th>
+                    <th >邮箱</th>
+                    <th >角色</th>
+                    <th >栏目权限</th>
+                    <th >操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $hilight_id = session('highlight_id', NULL);?>
+                <foreach name="user_list" item="one">
+                    <tr <if condition="$hilight_id eq $one['id']">class="success"</if>  <if condition="$login_user['uid'] eq $one['id']">style="font-weight:bold"</if> >
+                        <td nowrap>{$one['username']}</td>
+                        <td nowrap>{$one['email']}</td>
+                        <td nowrap>{$one['type_display_name']}</td>
+                        <td>
+                            <if condition="$one['role'] eq 'manager'">
+                                {$one['category_display']}
+                            <else/>
+                                {:implode(' , ',$one['category_display'])}</td>
+                            </if>
+                        <td style="min-width:100px">
+                            <if condition="($login_user['uid'] gt 10) AND ($one['id'] lt 10)">
+                                -
+                            <else />
+                                <div class="btn-group btn-group-xs">
+                                    <if condition="$login_user['role'] eq 'manager'">
+                                        <a href="{:U('render_edit?manager_role='.$one['manager_role']).'/user_id/'.$one['id']}" title="编辑栏目权限" class="btn btn-default ajaxlink"><i class="hi hi-pencil"></i></a>
+                                        <a href="{:U('changePassword?user_id='.$one['id'])}" title="修改密码" class="btn btn-default ajaxlink" ><i class="gi gi-lock"></i></a>
+                                        <if condition="$login_user['uid'] neq $one['id']">
+                                            <a href="{:U('User/delete?id='.$one['id'])}" title="删除" class="btn btn-danger ajaxlink" 
+                                                 ask="确认要删除该用户?" >
+                                                <i class="{$one_content['status']<10?'hi hi-trash':'hi hi-remove'}"></i>
+                                            </a>
+                                        </if>
+                                    <else />
+                                        <if condition="$login_user['uid'] eq $one['id']">
+                                            <a href="{:U('changePassword?user_id='.$one['id'])}" title="修改密码" class="btn btn-default ajaxlink" ><i class="gi gi-lock"></i></a>
+                                        </if>
+                                    </if>
+                                </div>
+                            </if>
+                        </td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+        {$_page}
+        <div class="clearfix"></div>
+    </div>
+</div>

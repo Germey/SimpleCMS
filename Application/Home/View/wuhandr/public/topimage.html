@@ -1,0 +1,14 @@
+<?php
+    if('index'!==ACTION_NAME) {
+        $cat_banner = D('Banner')->getBannerByName('default_category_banner');
+        $banner_img = $cat_banner[0]['path'];
+        if($category['banner']) {
+            $banner_img = $category['banner'];
+        } else if($category['parent']['banner']) {
+            $banner_img = $category['parent']['banner'];
+        }
+    }
+?>
+<if condition="$banner_img">
+    <div style="background:url({$banner_img}) center 0 no-repeat; height:250px; margin-top:-10px">&nbsp;</div>
+</if>

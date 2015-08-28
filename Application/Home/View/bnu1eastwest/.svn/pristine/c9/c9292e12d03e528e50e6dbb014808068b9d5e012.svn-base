@@ -1,0 +1,36 @@
+<div class="container" style="padding-top:20px;">
+    <div class="listleft">
+        <include file="article/left_shared" />
+    </div>
+
+    <div class="listright">
+        <div class="list-box">
+            <div class="list-box-head">搜索结果({$all_count})</div>
+                <if condition="$all_count">
+                    <foreach name="search_result" item="one">
+
+                        <div class="list-content">
+                            <h4 style="line-height:27px"><a href="{$one['link']}">{:str_ireplace($skey,$replace,$one['title'])}</a></h4>
+                            <p >
+                                <span style="color:#666;">[{$one['category_name']}]</span>&nbsp;&nbsp;
+                               <span class="muted">{:substr($one['create_time'],0,10)}</span>
+                            
+                            </p>
+                            <div class="muted summary_box">
+                                <if condition="$one['summary']">{:str_ireplace($skey,$replace,get_short(nl2br($one['summary']),250))}<else />{:str_ireplace($skey,$replace,get_short(strip_tags($one['content']),250))}</if>
+                            </div>
+                            
+                        </div>
+                    </foreach>
+                    <div class="pagestring">{$pagestring}</div>
+                <else/>
+                <blockquote style="margin-left:20px;">
+                  <div>你搜索的 <span class="a_color"><b>{$skey}</b></span> 没找到相关搜索内容</div>
+                  <div>建议换关键词重新搜索</div>
+                </blockquote>
+                </if>
+           
+        </div>
+    </div>
+</div><!-- / -->
+<div class="clear"></div>

@@ -1,0 +1,70 @@
+<div id="content-index">
+    <div class="content-header">
+        <div class="header-section">
+            <form method="get">
+                <table>
+                    <tr>
+                        <td><a href="{:U('edit')}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> 新增作者</a></td>
+                        <td>
+                            <div class="input-group">
+                              <input class="form-control input-sm" name="sname" value="{$sname}" placeholder="作者名" />
+                              <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="submit">搜索</button>
+                              </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <div class="block">
+        <table id="general-table" class="table table-striped table-vcenter table-hover">
+            <thead>
+                <tr>
+                    <!-- <th style="width:10px;padding:8px 2px"><input type="checkbox"></th> -->
+                    <th>头像</th>
+                    <th>作者</th>
+                    <th>简介</th>
+                    <th>文章数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $hilight_id = session('highlight_id', NULL);?>
+                <foreach name="authors" item="one">
+                    <tr <if condition="$hilight_id eq $one['id']">class="success"</if> >
+                        <td><a href="{$one['avatar']}" target="_blank"><img src="{$one['avatar']}" style="max-height:100px" /></a></td>
+                        <td nowrap>{$one['name']}</td>
+                        <td>
+                            <if condition="$one['weibo']">
+                                <p>微博：<a target="_blank" href="{$one['weibo']}">{$one['weibo']}</a></p>
+                            </if>
+                            {:nl2br($one['description'])}
+                        </td>
+                        <td><a href="/manage/Content/index?sauthor_id={$one['id']}" target="_blank">{$author_content_map[$one['id']]}</a></td>
+                        <td nowrap style="width:70px">
+                            <if condition="$login_user['role'] eq 'manager'">
+                                <div class="btn-group btn-group-xs">
+                                    <a href="{:U('edit?id='.$one['id'])}" title="编辑" class="btn btn-default"><i class="hi hi-pencil"></i></a>
+                                    <if condition="$author_content_map[$one['id']]">
+                                        <a href="javascript:void(0)" title="需清除该作者的关联文章才可删除作者" class="btn btn-default ajaxlink">
+                                            <i class="hi hi-trash"></i>
+                                        </a>
+                                    <else />
+                                        <a href="{:U('author/delete?id='.$one['id'])}" title="删除" class="btn btn-default ajaxlink" ask="确认要删除该用户?" >
+                                            <i class="hi hi-trash"></i>
+                                        </a>
+                                    </if>
+                                </div>
+                            </if>
+                        </td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+        {$_page}
+        <div class="clearfix"></div>
+    </div>
+</div>

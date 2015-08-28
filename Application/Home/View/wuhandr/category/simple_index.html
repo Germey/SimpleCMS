@@ -1,0 +1,26 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <div class="listfull">
+        <ul class="catblock">
+            <?php 
+                  $childs = D("Category")->getChildren($category['id']);
+             ?>
+             <foreach name="childs" item="child">
+                <li>
+                    <h4>
+                        {$child['title']}
+                        <a href="/category/{$child['id']}" title="查看更多{$child['title']}" class="more">更多 ››</a>
+                    </h4>
+                    <?php $pages = D("Content")->getPagesByTypeId($child['id'],1,8); ?>
+                    <ul class="simple">
+                        <foreach name="pages" item="one">
+                            <li><a href="{$one['link']}">{$one['title']}</a></li>
+                        </foreach>
+                    </ul>
+                </li>
+             </foreach>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+</div>

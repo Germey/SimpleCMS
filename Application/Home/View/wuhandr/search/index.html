@@ -1,0 +1,41 @@
+<div class="search nav-margin">
+    <div class="container">
+        <div class="listfull">
+            <div class="list-box">
+                <div class="box-title" style="width: 100%;">搜索关键字【<span class="a_color"><b>{$skey}</b></span>】结果有{$all_count}个</div>
+                    <if condition="$all_count">
+                        <foreach name="search_result" item="one">
+                            <div class="list-content">
+                                <h4><a href="{$one['link']}">
+                                {:str_ireplace($skey,$replace,$one['title'])}</a></h4>
+                                <p>
+                                    <span title="栏目">【{$one['category_name']}】</span>
+                                    <span class="muted">{:substr($one['create_time'],0,10)}</span>
+                                    <if condition="$one['tags']">
+                                        <span >
+                                            <b>标签：</b>
+                                            <foreach name="one['tags']" item="t">
+                                                <a href="/category/{$category['id']}?stid={$t['tag_id']}">
+                                                    {:str_ireplace($skey,$replace,$t['name'])}
+                                                </a>
+                                            </foreach>
+                                        </span>
+                                    </if>
+                                </p>
+                                <div class="muted summary_box">
+                                    <if condition="$one['summary']">{:str_ireplace($skey,$replace,get_short(nl2br($one['summary']),250))}<else />{:str_ireplace($skey,$replace,get_short(strip_tags($one['content']),250))}</if>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </foreach>
+                        <div class="pagestring">{$pagestring}</div>
+                    <else/>
+                        <blockquote>
+                          <div>你搜索的 <span class="a_color"><b>{$skey}</b></span> 没找到相关搜索内容</div>
+                          <div>建议换关键词重新搜索</div>
+                        </blockquote>
+                    </if>
+            </div>
+        </div>
+    </div>
+</div>

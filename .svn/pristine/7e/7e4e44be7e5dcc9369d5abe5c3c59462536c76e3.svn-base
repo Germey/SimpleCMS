@@ -1,0 +1,223 @@
+<?php
+namespace Manage\Model;
+use Think\Model;
+
+
+// 字段 + 扩展字段（基于栏目）
+class FieldModel extends Model {
+
+    // category_id 做扩展使用
+    public function getContentFields($model_id, $category_id) {
+
+        $thumb_placeholder = D('Config')->getConfigValue('thumb_remark');
+        $category = M("Category")->getById($category_id);
+        if($category['thumb_remark']) {
+            $thumb_placeholder = $category['thumb_remark'];
+        } elseif ($category['pid']) {
+            $premark = M("Category")->where('id=%d',$category['pid'])->getField('thumb_remark');
+            if($premark) {
+                $thumb_placeholder = $premark;
+            }
+        }
+
+        // 基本组件
+        $fields = array(
+            // "category_id" => array("title" => "标题", "param" => array('required' => true, )),
+
+            // "model_id" => array("title" => "标题", "class" => "text input-xxlarge", "param" => array('required' => true, )),
+
+            "title" => array("title" => "标题", "class" => "pull-left span6", "required"=>true, "extra_html" => '<label class="checkbox-inline"><input type="checkbox" onclick=\'$("#trsubtitle").toggle();\'>副标题</label>'),
+            "subtitle" => array("title" => "副标题", "class" => "span4", "hidden"=>true),
+
+            "address" => array("title" => "地址", "type"=>'address', "required"=>true, ),
+            "latlng" => array("title" => "经纬度", "type"=>'latlng', "required"=>true, "class"=>"span2", ),
+
+            "external_url" => array("title" => "链接", "required"=>true, "class"=>"span6", "placeholder"=>"http://"),
+			"video_url" => array("title" => "视频地址", "required"=>true, "class"=>"span6", "placeholder"=>"http://... 请输入视频flash/iframe地址【满屏那种的】", ),
+
+            "tags" => array("title" => "标签", ),
+
+            "source_name" => array("title" => "来源", "class" => "pull-left span1", "extra_html" => '<input type="text" id="source_link" name="source_link" class="pull-left span5 form-control input-sm" style="margin-left:4px" placeholder="来源链接" value="" />'),
+            // "source_link" => array("title" => "来源链接", ),
+            "author_name" => array("title" => "作者", "class" => "pull-left span1", "extra_html" => '<label class="checkbox-inline"><a onclick=\'window.open("/manage/author/index?sname="+encodeURIComponent($("#author_name").val()));\'><i class="fa fa-angle-right"></i>点击查看作者信息</a></label>'),
+
+            "content" => array("title" => "内容", "type" => "textarea", "class"=>"editor"),
+            "summary" => array("title" => "摘要", "type" => "textarea", ),
+
+            "thumb" => array("title" => "预览图", "type" => "image", "placeholder" => $thumb_placeholder),
+            "pictures" => array("title" => "组图", "type" => "pictures",),
+            "files" => array("title" => "附件", "type" => "files",),
+
+            "weight" => array("title" => "权重", "type" => "number", 'default_value' => 60),
+            "publish_time" => array("title" => "上线时间", "type" => "datetime"),
+            "allow_comment" => array("title" => "评论", "type" => "check", "options" => array("1"=>"允许"), "default_value" => 1),
+            "status" => array("title" => "状态", "type" => "select", 'options' => D("Status")->getContentStatus()),
+            // "due_publish_time" => array('title'=>'定时时间' ,'type' => 'datetime', 'class'=>'span1',),
+			"seo_keywords" => array("title" => "SEO关键字", "class" => "span6", "placeholder" => "关键字用空格隔开"),
+
+			"alias" => array("title" => "别名", "class" => "span1 pull-left", 'extra_html' => '<label class="control-label text-muted">通过别名，你可以用[site-domain]/content/[别名]的方式访问该文章</label>'),
+        );
+
+
+        $model_unset_fields = array(
+            1 => array('external_url', 'files','address','latlng'),
+            2 => array('external_url', 'video_url', 'content', 'files', 'alias','address','latlng'),
+            3 => array('video_url', 'source_name', 'author_name', 'content', 'files', 'pictures','alias', 'allow_comment','address','latlng'),
+            4 => array('external_url', 'author_name', 'files', 'pictures','alias','address','latlng'),
+            5 => array('external_url', 'video_url', 'source_name', 'pictures','alias','address','latlng'),
+            6 => array('external_url', 'video_url', 'files', 'pictures'),
+        );
+
+        // 可以在栏目中设置文章中带图片，默认不带
+        if(!$category['enable_content_picture']) {
+            $model_unset_fields[1][] = 'pictures';
+        }
+        if(!$category['enable_content_video']) {
+            for($i=1;$i<=6;$i++) {
+                $model_unset_fields[$i][] = 'video_url';
+            }
+        }
+
+        if(!$model_id) {
+            $model_id = 1;
+        }
+
+        $default_unsets = explode(',', D('Config')->getConfigValue('unset_fields'));
+        foreach ($default_unsets as $v) {
+            unset($fields[trim($v)]);
+        }
+
+        foreach ($model_unset_fields[$model_id] as $v) {
+            unset($fields[$v]);
+        }
+
+        // 系统隐藏字段
+        $system_disabled_fields = explode(',', D('Config')->getConfigValue('disabled_content_fields'));
+        foreach ($system_disabled_fields as $f) {
+            unset($fields[trim($f)]);
+        }
+
+        // category隐藏字段
+        $category_disabled_fields = explode(',', $category['disabled_fields']);
+        foreach ($category_disabled_fields as $f) {
+            unset($fields[trim($f)]);
+        }
+
+        if($category['override_fields']) {
+            $a = explode(';',str_replace(array('；','：'), array(';',':'), $category['override_fields']));
+            foreach($a as $v) {
+                $override = explode(':',$v);
+                if($fields[$override[0]] && count($override)>1) {
+                    $fields[$override[0]]['title'] = $override[1];
+                    $fields[$override[0]]['placeholder'] = $override[2];
+                }
+            }
+        }
+
+        return $fields;
+    }
+
+
+    public function getCategoryFields($model_id, $category_id) {
+
+        $extends = D("Extend")->getField('id,title');
+        $extends[0] = '-';
+        $category_type = D('Category')->getCategorytype();
+
+        $fields = array(
+
+                // "pid" => array("title" => "上级ID", "class" => "span1", "type"=>"number", "disabled"=>1),
+            "parent_title" => array("title" => "上级栏目名称", "class" => "span1", "disabled"=>1, "default_value"=>'无'),
+            "title" => array("title" => "栏目名称", "class" => "pull-left span1", "required"=>true, "extra_html" => '<label class="checkbox-inline"><input type="checkbox" onclick=\'$("#trsubtitle").toggle();\'>副标题</label>'),
+            "subtitle" => array("title" => "副标题", "class" => "span3", "hidden"=>true),
+
+            "name" => array("title" => "英文名", "class" => "span1", "required"=>true),
+            "type" => array('title'=>"所属类型", 'class'=>'type_select span1',"type"=>'select', "options" => $category_type , "required"=>true ,'append_tip' => '提示：1.频道页本身不允许发文档。2.列表页可以发布文档。3.单页不能发布文档，前台栏目直接显示内容'),
+            "models" => array("title" => "内容模型", ),
+
+            "template_index" => array("title" => "频道页模板", 'default_value'=>'category/index'),
+            "template_list" => array("title" => "列表页模板", 'default_value'=>'category/list'),
+            "template_single" => array("title" => "单页模板", 'default_value'=>'category/single'),
+            "extralink" => array('title'=> '外部链接','placeholder'=>'http://'),
+            "content" => array('title' => '模板内容' , 'type'=> 'textarea','class'=>'editor'),
+
+            "keywords" => array("title" => "SEO关键字",),
+            "description" => array("title" => "SEO描述", "type" => "textarea", ),
+            "remark" => array("title" => "栏目备注", "placeholder" => "显示在内容栏目列表页下方"),
+            "thumb_remark" => array("title" => "图片预览图提示", "placeholder" => "上传文章预览图的大小提醒"),
+
+            "disabled_fields" => array("title" => "隐藏内容字段", "placeholder" => "逗号分隔的字段名称，如tags, author_id"),
+            "override_fields" => array("title" => "字段覆盖显示", "placeholder" => "field_name:new_display_name:new_placeholder;summary:新的摘要:这个摘要是做这个用途的"),
+            "extend_id" => array("title" => "扩展字段模型", "type"=>"select", "options"=> $extends ),
+            "list_size" => array("title" => "列表页每页内容数", "type"=>"number", "class"=>"span1", "default_value"=>D('Config')->getConfigValue('list_size')),
+
+            "thumb" => array("title" => "预览图", "type" => "image",),
+            "banner" => array("title" => "Banner图", "type" => "image",),
+
+            "allow_comment" => array("title" => "评论", "type" => "check", "options" => array("1"=>"允许"), "default_value" => 1),
+
+            "sort" => array("title" => "排序", "type" => "number", 'default_value' => 0, "append_tip"=>"越大越靠后"),
+
+            'enable_content_picture' => array('title' => '允许内容中带图集', 'type' => 'radio', 'class'=>"", 'options' => array( 0=>'不需要', 1=>'需要'),),            'enable_content_video' => array('title' => '允许内容外加视频', 'type' => 'radio', 'class'=>"", 'options' => array( 0=>'不需要', 1=>'需要'),),
+            "enable_children" => array("title" => "子内容", "type" => "radio", 'default_value' => 0, 'options' => array( 0=>'不需要', 1=>'需要'),),
+            "children_models" => array("title" => "子内容模型", ),
+            
+            "enable_check" => array("title" => "审核", "type" => "radio", 'default_value' => 1, 'options' => array( 0=>'不需要',  1=>'需要'),),
+            'is_menu' => array('title' => '前台菜单', 'type' => 'radio', 'class'=>"", 'options' => array( 1=>'显示', 0=>'不显示'),),
+            'enable_contribute' => array('title' => '投稿', 'type' => 'radio', 'default_value' => 0, 'class'=>"", 'options' => array( 0=> '不允许', 1=> '允许栏目', 2=> '允许子文章'),),
+            'link' => array('title' => '前台链接', 'default_value' => C('CATEGORY_LINK').'{id}','append_tip' => '提示：{id}表示前台菜单是跟id打开的,{name}表示用栏目英文名打开,例如：/type/{id} 或 /type/{name}'),
+            'link_target' => array('title'=>'打开方式', 'type' => 'radio', 'options'=> array(0=>'本页打开',1=>'新窗口打开'),),
+            );
+
+    return $fields;
+    }
+
+
+    public function getConfigFields() {
+     $fields = array(
+
+                // "type" => array("title" => "配置类型", "type"=>"select", "options"=>array('site',)),
+        "title" => array("title" => "显示名称", "required"=>true),
+        "key" => array("title" => "读取关键字", "class" => "span1", "required"=>true, "placeholder"=>"仅限英文+下滑线"),
+        "value" => array("title" => "值", "type"=>"textarea", "required"=>true),
+        "edit_type" => array("title" => "输入类型", "type"=>"select", "options"=>array('input','textarea')),
+        "remark" => array("title" => "备注", "type"=>"textarea"),
+        );
+
+     return $fields;
+    }
+
+
+    public function getAuthorFields() {
+     $fields = array(
+        "name" => array("title" => "姓名", "required"=>true, "class" => "span2"),
+        "avatar" => array("title" => "头像", "type" => "image", "placeholder" => "建议大小120 * 120px"),
+        "description" => array("title" => "描述", "type"=>"textarea", ),
+        "weibo" => array("title" => "微博", "placeholder" => "请填写以http开头的微博个人主页链接，如：http://weibo.com/sinat"),
+        );
+
+     return $fields;
+    }
+
+    public function getTagFields() {
+        $fields = array(
+            "name" => array("title" => "名称", "required"=>true, "class" => "span2"),
+            "description" => array("title" => "描述", "type"=>"textarea", ),
+        );
+        return $fields;
+    }
+
+    public function getMessageFields(){
+
+        $fields = array(
+            "username"      => array("title" => "昵称", "required" => true, "class" => "span2"),
+            "email"         => array("title" => "邮箱", "required" => true, "class" => "span2", ),
+            // "qq"            => array("title" => "QQ", "required" => true, "class" => "span2", 'hidden' => true),
+            // "mobile"        => array("title" => "手机", "class" => "span2", ),
+            "content"       => array("title" => "留言", "type"=>"textarea", 'hidden' => true),
+            "admin_note"    => array("title" => "回复内容", "type"=>"textarea", 'hidden' => true),
+            "status"        => array("title" => "状态", "type" => "select", 'default_value' => 0, 'options' => array( 0 =>'未发布', 1 => '发布' ),),
+        );
+        return $fields;
+    }
+}

@@ -1,0 +1,87 @@
+<div class="clear box">
+    <if condition="$file_tip">
+      <div class="text-muted"><i class=""></i>{$files_tip}</div>
+    </if>
+
+    <input type="file" id="file-upload" class="f-input" style="width:400px"/>
+    <div id="file-custom-queue"></div>
+    <div class="file-wrapper">
+      <table id="file-table" class="table table-dashed file-upload">
+        <if condition="$files">
+          <foreach name="files" item="one">
+            <tr class="filecouldsort" id="trfile{$one['file_id']}">
+              <td class="first"><i class="fi fi-{$one['ext']} fa-5x"></i></td><input type="hidden" name="file_ids[]" value="{$one['file_id']}">
+              <td>
+                <input type="hidden" name="file_ids[]" value="{$one['file_id']}" />
+                <div class="form-inline"><label class="control-label">名称</label> <input type="text" class="form-control input-sm" name="file_title{$one['file_id']}" value="{$one['title']}"></div>
+                <div class="form-inline"><label class="control-label">备注</label> <textarea name="file_summary{$one['file_id']}" type="text" class="form-control input-sm">{$one['summary']}</textarea>
+              </td>
+              <td>
+                <a href="javascript:void(0);" onclick="remove_file({$one['file_id']});"><i class="fa fa-times fa-2x text-danger"></i></a>
+              </td>
+            </tr>
+          </foreach>
+        </if>
+      </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+      //初始化 因为要和下面一个一个增加的方式配合，不能一齐用class触发
+      <foreach name="files" item="file">
+        trigger_sort({$file['file_id']});
+      </foreach>
+
+      var max_up_size = parseInt(("{:C('DOWNLOAD_UPLOAD.maxSize')}" / 1024/1014));
+      setTimeout(function () {
+        $('#file-upload').uploadify({
+            'swf' : "__STATIC__/uploadify/uploadify.swf",
+            "uploader"        : "{:U('File/upload',array('session_id'=>session_id()))}",
+            "buttonText"      : "上传文件(可多选，单个文件最大"+max_up_size+"M)",
+            'queueID'         : 'file-custom-queue',
+            "fileObjName"     : "download",
+            "width"           : 234,
+            'multi' : true,
+            'onUploadSuccess' : function(file, data) {
+              var data = $.parseJSON(data);
+
+              if(data.status){
+
+                  var idx = data.id;
+                  var str = '<tr class="filecouldsort" id="trfile'+idx+'">';
+                  str += '<td class="first"><i class="fi fi-'+data.ext+' fa-5x"></i></td><input type="hidden" name="file_ids[]" value="'+idx+'">';
+                  str += '<td class="infos"><div class="form-inline"><label class="control-label">标题</label> <input type="text" class="form-control input-sm" name="file_title'+idx+'" value="'+data.info+'"></div>';
+                  str += '<div class="form-inline"><label class="control-label">备注</label> <textarea name="file_summary'+idx+'" type="text" class="form-control input-sm"></textarea></td>';
+                  str += '<td><a href="javascript:void(0);" onclick="remove_file('+ idx +');"><i class="fa fa-times fa-2x text-danger"></i></a></td></tr>';
+
+                  $("#file-table").prepend(str);
+
+                  // 触发新文件和原来文件的排序
+                  trigger_sort(idx);
+
+              } else {
+                  alert('上传有误，请联系管理员：');
+              }
+            },
+        });
+      },0);
+  });
+
+  function remove_file(id) {
+      if(!id) return;
+      if(window.confirm("是否确认删除该文件？")) {
+          $("#trfile" + id).remove();
+      }
+  }
+
+  function trigger_sort(id) {
+      if(!id) return;
+      sort_selector = 'id="trfile'+id+'"';
+      // $("#gallery-table").dragsort("destroy");
+      $("#file-table").dragsort({ dragSelector: 'tr['+sort_selector+']', placeHolderTemplate: '<table id="gallery-table"><tr class="filecouldsort"></tr>' });
+  }
+
+</script>

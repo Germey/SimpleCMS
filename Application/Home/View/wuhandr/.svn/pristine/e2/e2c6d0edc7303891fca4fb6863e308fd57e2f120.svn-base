@@ -1,0 +1,12 @@
+<li <if condition="($idx+1)%4==0">class="last"</if>>
+    <img alt="{$pone['title']}" src="{:thumb($pone['thumb'], 200,280)}">
+    <div class="h">{$pone['title']}</div>
+    <div>
+      <?php $file = $pone['files'][0]; ?>
+      <if condition="in_array($file['ext'], array('pdf','jpg','gif','png'))">
+        <a href="/Uploads/file/{$file['savepath']}{$file['savename']}" target="_blank"><i class="icon-zoom-in"></i>预览</a>&nbsp;&nbsp;
+      </if>
+      <a href="{:U('File/download?id='.$file['md5'])}"><i class="icon-download-alt"></i>下载</a>&nbsp;
+      <small>（{:format_bytes($file['size'])}）</small>
+    </div>
+</li>

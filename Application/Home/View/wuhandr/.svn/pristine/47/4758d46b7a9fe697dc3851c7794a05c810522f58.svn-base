@@ -1,0 +1,64 @@
+<div class="container edu">
+    <?php
+      $subchildren = D('Category')->getChildren($category['id']);
+      foreach ($subchildren as $v) {
+          $news_types[$v['id']] = $v['title'];
+          $psize = 3;
+          // var_dump($v['template_list']);
+          if(strpos($v['template_list'], 'list_attachment')!==false) {
+            $psize = 4;
+            $as_attachs[] = $v['id'];
+          }
+          $news_types_pages[$v['id']] = D("Content")->getPagesByTypeId($v['id'],1,$psize);
+      }
+    ?>
+    <foreach name="news_types" item="name">
+        <br /><br />
+        <div class="box-title" style="margin-bottom:10px;">
+            <a href="/category/{$key}">{$name}<span class="icon-more"></span></a>
+        </div>
+        <if condition="in_array($key,$as_attachs)">
+            <ul class="attachlist">
+                <foreach name="news_types_pages[$key]" key="idx" item="pone">
+                  <include file="category/attach_li" />
+                </foreach>
+            </ul>
+            <div class="clear"></div>
+        <else />
+          <if condition="$news_types_pages[$key]">
+            <div class="featured">
+                <ul class="ui-tabs-nav" >
+                    <foreach name="news_types_pages[$key]" key="k" item="pone">
+                      <li id="nav-fragment-{$pone['id']}" class="ui-tabs-nav-item <if condition="$k==0">ui-tabs-selected</if>">
+                          <a href="#fragment-{$pone['id']}" onclick="javascript:link_goto('/content/{$pone['id']}')">
+                            <span style="font-size:15px;">{$pone['title']}</span>
+                            <span class="pull-right">{:substr($pone['publish_time'], 0,10)}</span>
+                            <div class="muted" style="line-height:20px;">
+                            {:get_short($pone['summary']?$pone['summary']:trim(strip_tags($pone['content'])),84)}</div>
+                          </a>
+                      </li>
+                    </foreach>
+                </ul>
+                <foreach name="news_types_pages[$key]" key="k" item="pone">
+                    <div class="ui-tabs-panel" id="fragment-{$pone['id']}">
+                        <div class="left">
+                          <a href="/content/{$pone['id']}"><img alt="{$pone['title']}" src="{:thumb($pone['thumb'], 320,192)}"></a>
+                        </div>
+                    </div>
+                </foreach>
+            </div>
+            <div class="clear"></div>
+          </if>
+        </if>
+
+    </foreach>
+</div>
+
+<script type="text/javascript"> 
+    function link_goto(link) {
+        window.location.href=link;
+    }
+    $(document).ready(function() {
+        $(".featured > ul").tabs({event: 'mouseover',fx:{opacity: "toggle"}}).tabs("rotate", 0, true);
+    });
+</script>

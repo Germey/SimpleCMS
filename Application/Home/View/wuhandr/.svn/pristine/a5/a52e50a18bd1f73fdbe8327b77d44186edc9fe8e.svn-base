@@ -1,0 +1,37 @@
+<include file="public/category_head" />
+
+<div class="container">
+    <include file="public/breadcrumb" />
+    <div class="listleft">
+        <include file="public/category_tags" />
+        <div class="list-box">
+            <ul class="simple">
+                <article:lists name="one" category="$category['id']" ispage="true"  tag_id="$_GET['stid']" row="20">
+                    <li>
+                        <a href="{$one['link']}">{$one['title']}</a>
+                        <if condition="$one['tags']">
+                            &nbsp;&nbsp;&nbsp;<i title="标签" class="icon icon-tag"></i>
+                            <foreach name="one['tags']" item="t">
+                                <a style="color: #3a87ad" href="/category/{$one['category_id']}?stid={$t['tag_id']}">{$t['name']}</a>&nbsp;&nbsp;
+                            </foreach>
+
+                        </if>
+                        <span class="pull-right muted"><small>{:substr($one['publish_time'],0,10)}</small></span>
+<!--                         <if condition="$one['summary']">
+                            <blockquote>{:get_short($one['summary'],170)}</blockquote>
+                        </if> -->
+                    </li>
+                </article:lists>
+            </ul>
+            <div class="clear"></div>
+            <div class="pagestring">{$pagestring}</div>
+        </div>
+    </div>
+
+    <div class="listright">
+        <include file="category/related_category" />
+        <if condition="($category['parent']['id'] eq 45) OR ($category['parent']['id'] eq 53)">
+            <include file="category/quick_links" />
+        </if>
+    </div>
+</div>

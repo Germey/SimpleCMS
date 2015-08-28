@@ -1,0 +1,10 @@
+<script src="http://api.map.baidu.com/api?v=1.4" type="text/javascript"></script>
+<div class="">
+    <input type="text" onclick="map_show();" id="position" class="form-control span2 input-sm" name="latlng" value="{$content['latlng']}" placeholder="填写完地址后，位置会自动标注在地图上">
+</div>
+
+<script type="text/javascript">
+    function map_show(){
+        X.post("__URL__/ajax_dialog_map_position");
+    }
+</script>

@@ -1,0 +1,17 @@
+<?php
+    $breads[U('index')] = '内容';
+    foreach ($breadcrumb_info as $key => $value) {
+        $breads[U('index?cid='.$value['id'])] = $value['title'];
+    }
+
+    // var_dump($breads);
+?>
+<ul class="breadcrumb breadcrumb-top">
+    <foreach name="breads" item="one">
+        <li><a href="{$key}">{$one}</a></li>
+    </foreach>
+    <if condition="$content">
+        <li class="text-muted">{$content['title']}</li>
+    </if>
+</ul>
+
